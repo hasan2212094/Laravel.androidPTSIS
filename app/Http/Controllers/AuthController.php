@@ -28,8 +28,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'User registered successfully'], 201);
     }
 
-    public function login(Request $request)
-    {
+    public function login(Request $request) {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -43,8 +42,14 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['token' => $token, 'role' => $user->role->name]);
+        return response()->json([
+            'token' => $token,
+            'role' => $user->role->name,
+            'name' => $user->name,
+            'email' => $user->email,
+        ]);
     }
+
 
     public function logout(Request $request)
     {
