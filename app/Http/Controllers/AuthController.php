@@ -9,24 +9,47 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
-    {
-        $data = $request->validate([
+    public function register(Request $request) {
+        $validationRules = [
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
             'role_id' => 'required|exists:roles,id',
-        ]);
+        ];
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role_id' => $request->role_id,
-        ]);
+        $validationMessages = [
+            'name.required' => 'Nama harus diisi',
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Email harus valid',
+            'email.unique' => 'Email sudah digunakan',
+            'password.required' => 'Password harus diisi',
+            'password.min' => 'Password harus minimal 6 karakter',
+            'role_id.required' => 'Role ID harus diisi',
+            'role_id.exists' => 'Role ID tidak valid',
+        ];
 
-        return response()->json(['message' => 'User registered successfully'], 201);
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $validationRules, $validationMessages);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], 422);
+        }
+
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role_id' => $request->role_id,
+            ]);
+
+            return response()->json(['message' => 'User registered successfully'], 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['error' => 'Error occurred while creating user'], 500);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred'], 500);
+        }
     }
+
 
     public function login(Request $request) {
         $request->validate([
@@ -37,7 +60,10 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages(['email' => ['Invalid credentials']]);
+            return response()->json([
+                'error' => 'Invalid credentials',
+                'message' => 'Email atau password salah',
+            ], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -50,6 +76,7 @@ class AuthController extends Controller
             'created_at' => $user->created_at,
         ]);
     }
+
 
 
     public function logout(Request $request)
