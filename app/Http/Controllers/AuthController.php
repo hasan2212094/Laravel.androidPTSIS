@@ -47,6 +47,7 @@ class AuthController extends Controller
             'role' => $user->role->name,
             'name' => $user->name,
             'email' => $user->email,
+            'created_at' => $user->created_at,
         ]);
     }
 
