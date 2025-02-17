@@ -6,6 +6,8 @@ use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use function Ramsey\Uuid\v1;
+
 class RoleSeeder extends Seeder
 {
     /**
@@ -14,8 +16,10 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         Role::insert([
-            ['name' => 'admin'],
-            ['name' => 'user'],
+            ['name' => 'admin1'],
+            ['name' => 'admin2'],
+            ['name' => 'admin3'],
+            ['name' => 'user4'],
         ]);
     }
 }

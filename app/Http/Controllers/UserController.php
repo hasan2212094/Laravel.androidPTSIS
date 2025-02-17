@@ -105,11 +105,38 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::find($id);
+
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $user->delete();
-        return response()->json(['message' => 'User deleted successfully'], 200);
+        $user->delete(); // Soft delete
+
+        return response()->json(['message' => 'User deleted successfully']);
     }
+    
+    public function restore($id)
+{
+    $user = User::onlyTrashed()->find($id);
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found or not deleted'], 404);
+    }
+
+    $user->restore(); // Mengembalikan user
+
+    return response()->json(['message' => 'User restored successfully']);
+}
+public function forceDelete($id)
+{
+    $user = User::onlyTrashed()->find($id);
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found or not deleted'], 404);
+    }
+
+    $user->forceDelete(); // Hapus permanen
+
+    return response()->json(['message' => 'User permanently deleted']);
+}
 }
