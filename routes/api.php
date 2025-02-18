@@ -61,11 +61,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
+
+    Route::get('/assignments', [AssignmentController::class,'index']);
 });
     
 Route::post('/assignments', [AssignmentController::class,'store']);
 Route::put('/assignments/{id}', [AssignmentController::class,'update']);
 Route::delete('/assignments/{id}', [AssignmentController::class,'destroy']);
-
 Route::get('/assignments', [AssignmentController::class,'index']);
 

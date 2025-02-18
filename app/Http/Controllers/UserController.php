@@ -109,9 +109,9 @@ class UserController extends Controller
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
-
-        $user->delete(); // Soft delete
-
+    
+        $user->delete();
+    
         return response()->json(['message' => 'User deleted successfully']);
     }
     
