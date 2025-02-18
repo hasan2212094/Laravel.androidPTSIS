@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AssignmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,3 +62,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
 });
+    
+Route::post('/assignments', [AssignmentController::class,'store']);
+Route::put('/assignments/{id}', [AssignmentController::class,'update']);
+Route::delete('/assignments/{id}', [AssignmentController::class,'destroy']);
+
+Route::get('/assignments', [AssignmentController::class,'index']);
+

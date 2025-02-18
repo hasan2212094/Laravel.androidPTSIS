@@ -40,7 +40,9 @@ class AuthController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'role_id' => $request->role_id,
+                'role_id' => $request->rol,
+                
+
             ]);
 
             return response()->json(['message' => 'User registered successfully'], 201);
@@ -70,11 +72,11 @@ class AuthController extends Controller
         $authToken = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'token' => $authToken,
+           'token' => $authToken,
             'role' => $user->role->name,
             'name' => $user->name,
+
             'email' => $user->email,
-            'created_at' => $user->created_at,
         ]);
     }
 
