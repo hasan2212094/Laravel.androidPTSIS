@@ -10,7 +10,8 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $validationRules = [
             'name' => 'required',
             'email' => 'required|email|unique:users',
@@ -40,7 +41,9 @@ class AuthController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'role_id' => $request->role_id,
+                'role_id' => $request->Role->name,
+
+
             ]);
 
             return response()->json(['message' => 'User registered successfully'], 201);
@@ -52,7 +55,8 @@ class AuthController extends Controller
     }
 
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -72,6 +76,7 @@ class AuthController extends Controller
         return response()->json([
             'token' => $authToken,
             'id' => $user->id,
+            'role' => $user->role_id,
             'role' => $user->role->name,
             'name' => $user->name,
             'email' => $user->email,

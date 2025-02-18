@@ -14,8 +14,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with('Role')->get();
-        return response()->json($users, 200);
+        return UserResource::collection(User::with('role')->get());
     }
 
     /**

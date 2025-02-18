@@ -27,6 +27,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+    public function getRoleNameAttribute()
+    {
+        return $this->role ? $this->role->name : null;
+    }
 
     /**
      * The attributes that should be hidden for serialization.
