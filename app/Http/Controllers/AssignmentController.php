@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AssignmentResource;
 use App\Models\Assignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -13,7 +14,7 @@ class AssignmentController extends Controller
      */
     public function index()
     {
-        return response()->json('test index');
+        return AssignmentResource::collection(Assignment::with('user')->get());
     }
 
     /**
@@ -43,7 +44,11 @@ class AssignmentController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $assignment = Assignment::find($id);
+        if (!$assignment) {
+            return response()->json(['message' => 'Assignment not found'], 404);
+        }
+        return response()->json($assignment, 200);
     }
 
     /**
@@ -51,7 +56,14 @@ class AssignmentController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $assignment = Assignment::find($id);
+        if (!$assignment) {
+            return response()->json(['message' => 'Assignment not found'], 404);
+        }
+
+        $assignment->update($request->all());
+
+        return response()->json($assignment, 200);
     }
 
     /**
@@ -59,6 +71,14 @@ class AssignmentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $assignment = Assignment::find($id);
+        if (!$assignment) {
+            return response()->json(['message' => 'Assignment not found'], 404);
+        }
+
+        $assignment->delete();
+
+        return response()->json(['message' => 'Assignment deleted successfully'], 200);
     }
+    
 }
