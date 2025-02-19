@@ -28,6 +28,9 @@ class AssignmentController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required',
             'date' => 'required|date',
+            'image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048', // Maksimal 2MB
+            'level_urgent' => 'boolean', // Validasi level_urgent harus true/false
+            'status' => 'boolean', // Validasi level_urgent harus true/false
         ]);
 
         if ($validator->fails()) {
@@ -35,10 +38,24 @@ class AssignmentController extends Controller
                 'message' => 'Validasi gagal!',
                 'id_user.required' => 'diisi dengan angka ',
                 'date.required' => 'tolong isi date 1 hari ',
+                'image.required' => 'maksimal 2MB ',
             ], 422);
         }
+
+        $imagePath = null;
+      if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('assignments', 'public');}
     
-        $assignment = Assignment::create($request->all());
+       $assignment = Assignment::create([
+        'user_id' => $request->user_id,
+        'name' => $request->name,
+        'title' => $request->title,
+        'description' => $request->description,
+        'date' => $request->date,
+        'image' => $imagePath, // Simpan path gambar
+        'level_urgent' => $request->level_urgent ?? true, // Jika tidak diisi, default true
+        'status' => $request->status ?? false, // Default false (belum selesai)
+        ]);
     
         return response()->json([
             'message' => 'Tugas berhasil ditambahkan!',

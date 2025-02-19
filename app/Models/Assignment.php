@@ -13,7 +13,11 @@ class Assignment extends Model
         'name',
         'title',
         'description',
-        'date'];
+        'date',
+        'image',
+        'level_urgent',
+        'status'
+    ];
         public function user()
     {
         return $this->belongsTo(User::class);
