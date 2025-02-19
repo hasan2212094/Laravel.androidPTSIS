@@ -31,12 +31,19 @@ class AssignmentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json([
+                'message' => 'Validasi gagal!',
+                'id_user.required' => 'diisi dengan angka ',
+                'date.required' => 'tolong isi date 1 hari ',
+            ], 422);
         }
-
+    
         $assignment = Assignment::create($request->all());
-
-        return response()->json($assignment, 201);
+    
+        return response()->json([
+            'message' => 'Tugas berhasil ditambahkan!',
+            'data' => $assignment
+        ], 201);
     }
 
     /**
@@ -57,28 +64,38 @@ class AssignmentController extends Controller
     public function update(Request $request, string $id)
     {
         $assignment = Assignment::find($id);
-        if (!$assignment) {
-            return response()->json(['message' => 'Assignment not found'], 404);
-        }
 
-        $assignment->update($request->all());
+    if (!$assignment) {
+        return response()->json([
+            'message' => 'Tugas tidak ditemukan!'
+        ], 404);
+    }
 
-        return response()->json($assignment, 200);
+    $assignment->update($request->all());
+
+    return response()->json([
+        'message' => 'Tugas berhasil diperbarui!',
+        'data' => $assignment
+    ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
-    {
-        $assignment = Assignment::find($id);
+    {$assignment = Assignment::find($id);
+
         if (!$assignment) {
-            return response()->json(['message' => 'Assignment not found'], 404);
+            return response()->json([
+                'message' => 'Tugas tidak ditemukan!'
+            ], 404);
         }
-
+    
         $assignment->delete();
-
-        return response()->json(['message' => 'Assignment deleted successfully'], 200);
+    
+        return response()->json([
+            'message' => 'Tugas berhasil dihapus!'
+        ], 200);
     }
     
 }

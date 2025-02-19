@@ -2,8 +2,10 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
@@ -27,4 +29,24 @@ class Handler extends ExceptionHandler
             //
         });
     }
+    public function render($request, Throwable $exception)
+{
+    if ($exception instanceof ModelNotFoundException) {
+        return response()->json([
+            'message' => 'Data tidak ditemukan!'
+        ], 404);
+    }
+
+    if ($exception instanceof ValidationException) {
+        return response()->json([
+            'message' => 'Validasi gagal!',
+            'errors' => $exception->errors()
+        ], 422);
+    }
+
+    return response()->json([
+        'message' => 'Terjadi kesalahan pada server!',
+        'error' => $exception->getMessage()
+    ], 500);
+}
 }
