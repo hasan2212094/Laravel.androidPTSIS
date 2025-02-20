@@ -36,27 +36,27 @@ class AssignmentController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validasi gagal!',
-                'id_user.required' => 'diisi dengan angka ',
-                'date.required' => 'tolong isi date 1 hari ',
-                'image.required' => 'maksimal 2MB ',
+                'errors' => $validator->errors()
             ], 422);
         }
 
+
         $imagePath = null;
-      if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('assignments', 'public');}
-    
-       $assignment = Assignment::create([
-        'user_id' => $request->user_id,
-        'name' => $request->name,
-        'title' => $request->title,
-        'description' => $request->description,
-        'date' => $request->date,
-        'image' => $imagePath, // Simpan path gambar
-        'level_urgent' => $request->level_urgent ?? true, // Jika tidak diisi, default true
-        'status' => $request->status ?? false, // Default false (belum selesai)
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('assignments', 'public');
+        }
+
+        $assignment = Assignment::create([
+            'user_id' => $request->user_id,
+            'name' => $request->name,
+            'title' => $request->title,
+            'description' => $request->description,
+            'date' => $request->date,
+            'image' => $imagePath, // Simpan path gambar
+            'level_urgent' => $request->level_urgent ?? true, // Jika tidak diisi, default true
+            'status' => $request->status ?? false, // Default false (belum selesai)
         ]);
-    
+
         return response()->json([
             'message' => 'Tugas berhasil ditambahkan!',
             'data' => $assignment
@@ -82,37 +82,37 @@ class AssignmentController extends Controller
     {
         $assignment = Assignment::find($id);
 
-    if (!$assignment) {
+        if (!$assignment) {
+            return response()->json([
+                'message' => 'Tugas tidak ditemukan!'
+            ], 404);
+        }
+
+        $assignment->update($request->all());
+
         return response()->json([
-            'message' => 'Tugas tidak ditemukan!'
-        ], 404);
-    }
-
-    $assignment->update($request->all());
-
-    return response()->json([
-        'message' => 'Tugas berhasil diperbarui!',
-        'data' => $assignment
-    ], 200);
+            'message' => 'Tugas berhasil diperbarui!',
+            'data' => $assignment
+        ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
-    {$assignment = Assignment::find($id);
+    {
+        $assignment = Assignment::find($id);
 
         if (!$assignment) {
             return response()->json([
                 'message' => 'Tugas tidak ditemukan!'
             ], 404);
         }
-    
+
         $assignment->delete();
-    
+
         return response()->json([
             'message' => 'Tugas berhasil dihapus!'
         ], 200);
     }
-    
 }
