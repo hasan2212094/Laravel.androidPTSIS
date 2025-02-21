@@ -40,19 +40,17 @@ class AssignmentController extends Controller
             ], 422);
         }
 
-
-        $imagePath = null;
+        $path = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('assignments', 'public');
+            $path = $request->file('image')->store('assignments', 'public');
         }
-
         $assignment = Assignment::create([
             'user_id' => $request->user_id,
             'name' => $request->name,
             'title' => $request->title,
             'description' => $request->description,
             'date' => $request->date,
-            'image' => $imagePath, // Simpan path gambar
+            'image' => $path ? asset('storage/' . $path) : null,
             'level_urgent' => $request->level_urgent ?? true, // Jika tidak diisi, default true
             'status' => $request->status ?? false, // Default false (belum selesai)
         ]);
