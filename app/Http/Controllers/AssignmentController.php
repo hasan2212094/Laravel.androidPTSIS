@@ -14,7 +14,7 @@ class AssignmentController extends Controller
      */
     public function index()
     {
-        return AssignmentResource::collection(Assignment::with('user','role')->get());
+        return AssignmentResource::collection(Assignment::with('user', 'role')->get());
     }
 
     /**
@@ -33,6 +33,11 @@ class AssignmentController extends Controller
             'level_urgent' => 'boolean', // Validasi level_urgent harus true/false
             'status' => 'boolean', // Validasi level_urgent harus true/false
         ]);
+        $validatedData = $validator->validated();
+        $onlyFields = $validatedData->only(['user_id_by', 'role_by', 'user_id_to', 'role_id', 'title','description_note','date_start','level_urgent','status']);
+
+        // Masukkan data yang dipilih ke dalam tabel
+        Assignment::create($onlyFields);
 
         if ($validator->fails()) {
             return response()->json([
