@@ -97,7 +97,7 @@ class AssignmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function updatePembuat(Request $request, string $id)
+    public function update_Pembuat(Request $request, string $id)
     {
         $assignment = Assignment::find($id);
 

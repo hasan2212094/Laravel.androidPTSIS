@@ -69,7 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/assignments/{id}', [AssignmentController::class, 'show']);
 
     Route::post('/assignments', [AssignmentController::class, 'store']);
-    Route::put('/assignments/{id}', [AssignmentController::class, 'update']);
+    Route::put('/assignments/{id}', [AssignmentController::class, 'update_pembuat']);
     Route::delete('/assignments/{id}', [AssignmentController::class, 'destroy']);
     Route::get('/assignments', [AssignmentController::class, 'index']);
 });
