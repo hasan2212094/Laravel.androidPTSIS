@@ -16,16 +16,15 @@ class AssignmentResource extends JsonResource
     {
         return [
             
-            'assignor' => $this->user ? $this->user->name : null,
-            'assignee'=>$this->role ? $this->role->name : null,
-            'name assignor' => $this->name,
+            'user_by_name' => $this->user ? $this->user->name : null,
+            'role_by_name'=>$this->role ? $this->role->name : null,
             'title' => $this->title,
-            'description' => $this->description,
-            'date' => $this->date,
-            'image' => $this->image,
+            'description_note' => $this->description,
+            'date_start' => $this->date,
             'level_urgent' => $this->level_urgent,
             'status' => $this->status,
-            'description_end'=>$this->description_end,
+            'image' => $this->image,
+            'finish_note'=>$this->description_end,
             'date_end' => $this->date_end,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),  // Tambahan field created_at dan updated_at ke dalam response

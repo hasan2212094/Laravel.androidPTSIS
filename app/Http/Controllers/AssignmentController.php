@@ -23,17 +23,15 @@ class AssignmentController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'role_id' => 'required|exists:roles,id',
-            'user_id' => 'required|exists:users,id',
-            'name' => 'required|string|max:255',
+            'user_id_by' => 'required|exists:users,id',
+            'role_by' => 'required|exists:roles,id',
+            'user_id_to' => 'required|exists:users,id',
+            'role_to' => 'required|exists:roles,id',
             'title' => 'required|string|max:255',
-            'description' => 'required',
-            'date' => 'required|date',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048', // Maksimal 2MB
+            'description_note' => 'required',
+            'date_start' => 'required|date',
             'level_urgent' => 'boolean', // Validasi level_urgent harus true/false
             'status' => 'boolean', // Validasi level_urgent harus true/false
-            'description_end' => 'required',
-            'date_end' => 'required|date',
         ]);
 
         if ($validator->fails()) {
@@ -48,17 +46,15 @@ class AssignmentController extends Controller
             $path = $request->file('image')->store('assignments', 'public');
         }
         $assignment = Assignment::create([
-            'role_id' => $request->role_id,
-            'user_id' => $request->user_id,
-            'name' => $request->name,
+            'user_id_by' => $request->user_id,
+            'role_by' => $request->role_id,
+            'user_id_to' => $request->user_id,
+            'role_to' => $request->role_id,
             'title' => $request->title,
-            'description' => $request->description,
-            'date' => $request->date,
-            'image' => $path ? asset('storage/' . $path) : null,
+            'description_note' => $request->description,
+            'date_start' => $request->date,
             'level_urgent' => $request->level_urgent ?? true, // Jika tidak diisi, default true
             'status' => $request->status ?? false, // Default false (belum selesai)
-            'description_end' => $request->description_end,
-            'date_end' => $request->date_end,
         ]);
 
         return response()->json([

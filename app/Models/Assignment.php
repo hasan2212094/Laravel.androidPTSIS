@@ -9,15 +9,16 @@ class Assignment extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id',
-        'role_id',
-        'name',
+        'user_id_by',
+        'role_by',
+        'user_id_to',
+        'role_to',
         'title',
-        'description',
-        'date',
-        'image',
+        'description_note',
+        'date_start',
         'level_urgent',
         'status',
+        'image',
         'description_end',
         'date_end',
     ];
