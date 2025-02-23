@@ -15,6 +15,7 @@ class AssignmentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'user_id_by' => $this->user_id_by,
             'user_id_to' => $this->user_id_to,
             'role_by' => $this->role_by,
@@ -25,7 +26,7 @@ class AssignmentResource extends JsonResource
             'role_to_name'=>$this->roleTo ? $this->roleTo->name : null,
             'title' => $this->title,
             'description' => $this->description,
-            'date_start' => $this->date,
+            'date_start' => $this->date_start,
             'level_urgent' => $this->level_urgent,
             'status' => $this->status,
             'image' => $this->image,
