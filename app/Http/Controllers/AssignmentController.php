@@ -19,8 +19,7 @@ class AssignmentController extends Controller
     // }
     public function index(Request $request)
     {
-        $bodyContent = $request->all();
-        $role_id = $bodyContent['role_id'];
+        $role_id = $request->query('role_id');
 
         $assignments = Assignment::with('user', 'role')
             ->where(function ($query) use ($role_id) {
