@@ -29,10 +29,10 @@ return new class extends Migration
             $table->text('description');
             $table->date('date_start');
             $table->boolean('level_urgent');
-            $table->boolean('status');
-            $table->string('image');
-            $table->text('finish_note');
-            $table->date('date_end');
+            $table->boolean('status')->default(0);
+            $table->string('image')->nullable();            ;
+            $table->text('finish_note')->nullable();
+            $table->date('date_end')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

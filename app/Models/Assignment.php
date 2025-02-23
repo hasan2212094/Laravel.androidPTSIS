@@ -14,15 +14,15 @@ class Assignment extends Model
         'user_id_to',
         'role_to',
         'title',
-        'description_note',
+        'description',
         'date_start',
         'level_urgent',
         'status',
         'image',
-        'description_end',
+        'finish_note',
         'date_end',
     ];
-        public function user()
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
@@ -31,4 +31,23 @@ class Assignment extends Model
         return $this->belongsTo(Role::class);
     }
 
+    public function userBy()
+    {
+        return $this->belongsTo(User::class, 'user_id_by');
+    }
+
+    public function userTo()
+    {
+        return $this->belongsTo(User::class, 'user_id_to');
+    }
+
+    public function roleBy()
+    {
+        return $this->belongsTo(Role::class, 'role_by');
+    }
+
+    public function roleTo()
+    {
+        return $this->belongsTo(Role::class, 'role_to');
+    }
 }
