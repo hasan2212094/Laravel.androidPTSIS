@@ -69,7 +69,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/assignments/{id}', [AssignmentController::class, 'show']);
 
     Route::post('/assignments', [AssignmentController::class, 'store']);
-    Route::post('/assignments/penerima', [AssignmentController::class, 'store_penerima']);
+    Route::post('/assignments/updatestatus', [AssignmentController::class, 'updatestatus']);
+
     Route::put('/assignments/{id}/pembuat', [AssignmentController::class, 'update_pembuat']);
     Route::put('/assignments/{id}/penerima', [AssignmentController::class, 'update_penerima']);
     Route::delete('/assignments/{id}', [AssignmentController::class, 'destroy']);
