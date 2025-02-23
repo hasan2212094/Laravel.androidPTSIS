@@ -20,13 +20,12 @@ class AssignmentController extends Controller
     public function index(Request $request)
     {
         $bodyContent = $request->all();
-        $role_by = $bodyContent['role_by'];
-        $role_to = $bodyContent['role_to'];
+        $role_id = $bodyContent['role_id'];
 
         $assignments = Assignment::with('user', 'role')
-            ->where(function ($query) use ($role_by, $role_to) {
-                $query->where('role_by', $role_by)
-                    ->orWhere('role_to', $role_to);
+            ->where(function ($query) use ($role_id) {
+                $query->where('role_by', $role_id)
+                    ->orWhere('role_to', $role_id);
             })
             ->get();
 
