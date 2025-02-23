@@ -15,13 +15,22 @@ class AssignmentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'user_id' => $this->user_id,
-            'name' => $this->name,
+            
+            'assignor' => $this->user ? $this->user->name : null,
+            'assignee'=>$this->role ? $this->role->name : null,
+            'name assignor' => $this->name,
             'title' => $this->title,
             'description' => $this->description,
             'date' => $this->date,
-            'user_id'=>$this->user_id,
-            'user_name' => $this->user ? $this->user->name : null,
+            'image' => $this->image,
+            'level_urgent' => $this->level_urgent,
+            'status' => $this->status,
+            'description_end'=>$this->description_end,
+            'date_end' => $this->date_end,
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),  // Tambahan field created_at dan updated_at ke dalam response
+          
+            
         ];
     }
 }

@@ -10,17 +10,24 @@ class Assignment extends Model
     use HasFactory;
     protected $fillable = [
         'user_id',
+        'role_id',
         'name',
         'title',
         'description',
         'date',
         'image',
         'level_urgent',
-        'status'
+        'status',
+        'description_end',
+        'date_end',
     ];
         public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 
 }

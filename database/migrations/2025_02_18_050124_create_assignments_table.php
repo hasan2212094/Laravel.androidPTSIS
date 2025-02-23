@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
             $table->string('name');
             $table->string('title');
             $table->text('description');
             $table->date('date');
+            $table->text('description_end');
+            $table->date('date_end');
             $table->timestamps();
         });
     }
