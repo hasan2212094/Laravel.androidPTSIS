@@ -30,7 +30,7 @@ class AssignmentResource extends JsonResource
             'level_urgent' => $this->level_urgent,
             'status' => $this->status,
             'image' => $this->image,
-            'finish_note'=>$this->description_end,
+            'finish_note'=>$this->finish_note,
             'date_end' => $this->date_end,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),  // Tambahan field created_at dan updated_at ke dalam response

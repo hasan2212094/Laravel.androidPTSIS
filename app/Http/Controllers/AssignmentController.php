@@ -82,58 +82,62 @@ class AssignmentController extends Controller
         ], 201);
     }
     public function updateStatus(Request $request, string $id)
-{
-    try {
-        // Cek apakah assignment dengan ID tersebut ada
-        $assignment = Assignment::find($id);
-        if (!$assignment) {
-            return response()->json(['message' => 'Assignment not found'], 404);
-        }
-
-        // Validasi input
-        $validated = $request->validate([
-            'image' => 'nullable|image|mimetypes:image/*|max:2048',
-            'finish_note' => 'sometimes|required|string|max:255',
-            'date_end' => 'sometimes|required|date',
-        ]);
-
-        // Handle image upload jika ada file gambar yang dikirim
-        if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($assignment->image) {
-                Storage::disk('public')->delete($assignment->image);
+    {
+        try {
+            // Cek apakah assignment dengan ID tersebut ada
+            $assignment = Assignment::find($id);
+            if (!$assignment) {
+                return response()->json(['message' => 'Assignment not found'], 404);
             }
 
-            // Simpan gambar baru
-            $assignment->image = $request->file('image')->store('assignments', 'public');
+            // Validasi input
+            $validated = $request->validate([
+                'image' => 'nullable|image|mimetypes:image/*|max:2048',
+                'finish_note' => 'sometimes|required|string|max:255',
+                'date_end' => 'sometimes|required|date',
+                'status' => 'boolean',
+            ]);
+
+            // Handle image upload jika ada file gambar yang dikirim
+            if ($request->hasFile('image')) {
+                // Hapus gambar lama jika ada
+                if ($assignment->image) {
+                    Storage::disk('public')->delete($assignment->image);
+                }
+
+                // Simpan gambar baru
+                $assignment->image = $request->file('image')->store('assignments', 'public');
+            }
+
+            // Update data hanya jika diberikan di request
+            if ($request->has('finish_note')) {
+                $assignment->finish_note = $validated['finish_note'];
+            }
+            if ($request->has('date_end')) {
+                $assignment->date_end = $validated['date_end'];
+            }
+
+            if ($request->has('status')) {
+                $assignment->status = $validated['status'];
+            }
+            // Simpan perubahan
+            $assignment->save();
+
+            // Response sukses
+            return response()->json([
+                'message' => 'Assignment updated successfully',
+                'id' => $assignment->id,
+                'finish_note' => $assignment->finish_note,
+                'date_end' => $assignment->date_end,
+                'status' => $assignment->status,
+                'image' => asset('storage/' . $assignment->image),
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => 'Validation error', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal server error', 'error' => $e->getMessage()], 500);
         }
-
-        // Update data hanya jika diberikan di request
-        if ($request->has('finish_note')) {
-            $assignment->finish_note = $validated['finish_note'];
-        }
-        if ($request->has('date_end')) {
-            $assignment->date_end = $validated['date_end'];
-        }
-
-        // Simpan perubahan
-        $assignment->save();
-
-        // Response sukses
-        return response()->json([
-            'message' => 'Assignment updated successfully',
-            'id' => $assignment->id,
-            'finish_note' => $assignment->finish_note,
-            'date_end' => $assignment->date_end,
-            'image' => asset('storage/' . $assignment->image),
-        ], 200);
-
-    } catch (ValidationException $e) {
-        return response()->json(['message' => 'Validation error', 'errors' => $e->errors()], 422);
-    } catch (\Exception $e) {
-        return response()->json(['message' => 'Internal server error', 'error' => $e->getMessage()], 500);
     }
-}
     /**
      * Display the specified resource.
      */
