@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Assignment extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes ; // Tambahkan SoftDeletes;
     protected $fillable = [
         'user_id_by',
         'role_by',
@@ -22,6 +23,8 @@ class Assignment extends Model
         'finish_note',
         'date_end',
     ];
+
+    protected $dates = ['deleted_at']; // Pastikan ada kolom deleted_at untuk soft delete
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -50,4 +53,5 @@ class Assignment extends Model
     {
         return $this->belongsTo(Role::class, 'role_to');
     }
+    
 }

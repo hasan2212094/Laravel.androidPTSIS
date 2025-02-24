@@ -158,7 +158,7 @@ class AssignmentController extends Controller
         try {
             // Cari assignment berdasarkan ID
             $assignment = Assignment::findOrFail($id);
-    
+
             // Validasi input
             $validated = $request->validate([
                 'user_id_by' => 'required|exists:users,id',
@@ -171,10 +171,10 @@ class AssignmentController extends Controller
                 'level_urgent' => 'boolean',
                 'status' => 'boolean',
             ]);
-    
+
             // Update assignment dengan data yang sudah divalidasi
             $assignment->update($validated);
-    
+
             return response()->json([
                 'message' => 'Assignment updated successfully',
                 'data' => $assignment
@@ -196,7 +196,7 @@ class AssignmentController extends Controller
         try {
             // Cari assignment berdasarkan ID, jika tidak ditemukan akan otomatis melempar error
             $assignment = Assignment::findOrFail($id);
-    
+
             // Validasi input
             $validated = $request->validate([
                 'image' => 'nullable|image|mimetypes:image/*|max:2048',
@@ -204,23 +204,23 @@ class AssignmentController extends Controller
                 'date_end' => 'sometimes|required|date',
                 'status' => 'boolean',
             ]);
-    
+
             // Handle upload gambar jika ada
             if ($request->hasFile('image')) {
                 // Hapus gambar lama jika ada
                 if (!empty($assignment->image)) {
                     Storage::disk('public')->delete($assignment->image);
                 }
-    
+
                 // Simpan gambar baru dan update path ke database
                 $validated['image'] = $request->file('image')->store('assignments', 'public');
             }
-    
+
             // Pastikan hanya mengupdate jika ada perubahan data
             if (!empty($validated)) {
                 $assignment->update($validated);
             }
-    
+
             return response()->json([
                 'message' => 'Assignment updated successfully',
                 'data' => [
@@ -248,19 +248,75 @@ class AssignmentController extends Controller
             ], 500);
         }
     }
-      public function destroy(string $id)
+    public function destroy(string $id)
     {
-        $assignment = Assignment::findOrFail($id);
+        try {
+            $assignment = Assignment::findOrFail($id);
+            $assignment->delete(); // Soft delete
 
-        // Hapus gambar jika ada
-        if ($assignment->image) {
-            Storage::disk('public')->delete($assignment->image);
+            return response()->json([
+                'message' => 'Assignment deleted successfully'
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Assignment not found'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Internal server error',
+                'error' => $e->getMessage()
+            ], 500);
         }
+    }
+    public function indexdelete()
+    {
+        $assignments = Assignment::onlyTrashed()->get();
+        return response()->json($assignments);
+    }
+    public function restore($id)
+    {
+        try {
+            $assignment = Assignment::onlyTrashed()->findOrFail($id);
+            $assignment->restore(); // Mengembalikan data yang terhapus
 
-        $assignment->delete();
-
-        return response()->json([
-            'message' => 'Tugas berhasil dihapus!',
-        ], 200);
+            return response()->json([
+                'message' => 'Assignment restored successfully',
+                'data' => $assignment
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Assignment not found or not deleted'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Internal server error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function forceDelete($id)
+    {
+        try {
+            // Cari data berdasarkan ID
+            $assignment = Assignment::find($id);
+    
+            // Jika tidak ditemukan, kembalikan response error
+            if (!$assignment) {
+                return response()->json(['message' => 'Assignment not found'], 404);
+            }
+    
+            // Hapus gambar dari storage jika ada
+            if ($assignment->image) {
+                Storage::disk('public')->delete($assignment->image);
+            }
+    
+            // Hapus assignment dari database
+            $assignment->delete();
+    
+            return response()->json(['message' => 'Assignment deleted successfully'], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal server error', 'error' => $e->getMessage()], 500);
+        }
     }
 }
