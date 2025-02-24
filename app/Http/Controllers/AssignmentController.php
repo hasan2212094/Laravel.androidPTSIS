@@ -153,58 +153,99 @@ class AssignmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update_Pembuat(Request $request, string $id)
+    public function updatePembuat(Request $request, string $id)
     {
-        $assignment = Assignment::find($id);
-
-        if (!$assignment) {
+        try {
+            // Cari assignment berdasarkan ID
+            $assignment = Assignment::findOrFail($id);
+    
+            // Validasi input
+            $validated = $request->validate([
+                'user_id_by' => 'required|exists:users,id',
+                'role_by' => 'required|exists:roles,id',
+                'user_id_to' => 'required|exists:users,id',
+                'role_to' => 'required|exists:roles,id',
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'date_start' => 'required|date',
+                'level_urgent' => 'boolean',
+                'status' => 'boolean',
+            ]);
+    
+            // Update assignment dengan data yang sudah divalidasi
+            $assignment->update($validated);
+    
             return response()->json([
-                'message' => 'Tugas tidak ditemukan!'
-            ], 404);
+                'message' => 'Assignment updated successfully',
+                'data' => $assignment
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Internal server error',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $assignment->update($request->all());
-
-        return response()->json([
-            'message' => 'Tugas berhasil diperbarui!',
-            'data' => $assignment
-        ], 200);
     }
-    public function update_penerima(Request $request, string $id)
+    public function updateEnd(Request $request, string $id)
     {
-        $assignment = Assignment::find($id);
-
-        if (!$assignment) {
+        try {
+            // Cari assignment berdasarkan ID
+            $assignment = Assignment::findOrFail($id);
+    
+            // Validasi input
+            $validated = $request->validate([
+                'image' => 'nullable|image|mimetypes:image/*|max:2048',
+                'finish_note' => 'sometimes|required|string|max:255',
+                'date_end' => 'sometimes|required|date',
+                'status' => 'boolean',
+            ]);
+    
+            // Handle upload gambar jika ada
+            if ($request->hasFile('image')) {
+                // Hapus gambar lama jika ada
+                if ($assignment->image) {
+                    Storage::disk('public')->delete($assignment->image);
+                }
+                // Simpan gambar baru
+                $validated['image'] = $request->file('image')->store('assignments', 'public');
+            }
+    
+            // Update assignment dengan data yang sudah divalidasi
+            $assignment->update($validated);
+    
             return response()->json([
-                'message' => 'Tugas tidak ditemukan!'
-            ], 404);
+                'message' => 'Assignment updated successfully',
+                'data' => $assignment
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Internal server error',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $assignment->update($request->all());
-
-        return response()->json([
-            'message' => 'Tugas berhasil diperbarui!',
-            'data' => $assignment
-        ], 200);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    }    public function destroy(string $id)
     {
-        $assignment = Assignment::find($id);
+        $assignment = Assignment::findOrFail($id);
 
-        if (!$assignment) {
-            return response()->json([
-                'message' => 'Tugas tidak ditemukan!'
-            ], 404);
+        // Hapus gambar jika ada
+        if ($assignment->image) {
+            Storage::disk('public')->delete($assignment->image);
         }
 
         $assignment->delete();
 
         return response()->json([
-            'message' => 'Tugas berhasil dihapus!'
+            'message' => 'Tugas berhasil dihapus!',
         ], 200);
     }
 }
