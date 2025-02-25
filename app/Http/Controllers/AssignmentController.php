@@ -57,7 +57,7 @@ class AssignmentController extends Controller
 
         $validatedData = $validator->validated();// Masukkan data yang dipilih ke dalam tabel
         $onlyFields = Arr::only($validatedData, ['user_id_by', 'role_by', 'user_id_to', 'role_to', 'title', 'description', 'level_urgent']);
-        $validatedData['date_start'] = now();  
+        $validatedData['date_start'] = now();
         Assignment::create($onlyFields);
 
         // $path = null;
@@ -94,7 +94,6 @@ class AssignmentController extends Controller
             $validated = $request->validate([
                 'image' => 'nullable|image|mimetypes:image/*|max:2048',
                 'finish_note' => 'sometimes|required|string|max:255',
-                'date_end' => 'sometimes|required|date',
                 'status' => 'boolean',
             ]);
 
@@ -116,11 +115,12 @@ class AssignmentController extends Controller
             if ($request->status == true && !$assignment->date_end) {
                 $assignment->date_end = now(); // Simpan waktu sekarang saat tugas selesai
             }
-        
+
 
             if ($request->has('status')) {
                 $assignment->status = $validated['status'];
             }
+            $assignment->date_end = now();
             $assignment->updated_at = now();
             // Simpan perubahan
             $assignment->save();
@@ -169,11 +169,13 @@ class AssignmentController extends Controller
                 'role_to' => 'required|exists:roles,id',
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
-                'date_start' => 'required|date',
                 'level_urgent' => 'boolean',
                 'status' => 'boolean',
             ]);
 
+            $validated['date_start'] = now();
+
+            $assignment->update($validated);
             // Update assignment dengan data yang sudah divalidasi
             $assignment->update($validated);
 
