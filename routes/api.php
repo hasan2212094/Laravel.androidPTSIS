@@ -72,7 +72,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/assignments/updatestatus/{id}', [AssignmentController::class, 'updatestatus']);
 
     Route::put('/assignments/updatepembuat/{id}', [AssignmentController::class, 'updatePembuat']);
-    Route::put('/assignments/updatepenerima/{id}', [AssignmentController::class, 'updateEnd']);
+    // Route::put('/assignments/updatepenerima/{id}', [AssignmentController::class, 'updateEnd']);
 
 
     Route::delete('/assignments/{id}', [AssignmentController::class, 'destroy']); // Soft delete

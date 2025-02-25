@@ -191,63 +191,63 @@ class AssignmentController extends Controller
             ], 500);
         }
     }
-    public function updateEnd(Request $request, string $id)
-    {
-        try {
-            // Cari assignment berdasarkan ID, jika tidak ditemukan akan otomatis melempar error
-            $assignment = Assignment::findOrFail($id);
+    // public function updateEnd(Request $request, string $id)
+    // {
+    //     try {
+    //         // Cari assignment berdasarkan ID, jika tidak ditemukan akan otomatis melempar error
+    //         $assignment = Assignment::findOrFail($id);
 
-            // Validasi input
-            $validated = $request->validate([
-                'image' => 'nullable|image|mimetypes:image/*|max:2048',
-                'finish_note' => 'sometimes|required|string|max:255',
-                'date_end' => 'sometimes|required|date',
-                'status' => 'boolean',
-            ]);
+    //         // Validasi input
+    //         $validated = $request->validate([
+    //             'image' => 'nullable|image|mimetypes:image/*|max:2048',
+    //             'finish_note' => 'sometimes|required|string|max:255',
+    //             'date_end' => 'sometimes|required|date',
+    //             'status' => 'boolean',
+    //         ]);
 
-            // Handle upload gambar jika ada
-            if ($request->hasFile('image')) {
-                // Hapus gambar lama jika ada
-                if (!empty($assignment->image)) {
-                    Storage::disk('public')->delete($assignment->image);
-                }
+    //         // Handle upload gambar jika ada
+    //         if ($request->hasFile('image')) {
+    //             // Hapus gambar lama jika ada
+    //             if (!empty($assignment->image)) {
+    //                 Storage::disk('public')->delete($assignment->image);
+    //             }
 
-                // Simpan gambar baru dan update path ke database
-                $validated['image'] = $request->file('image')->store('assignments', 'public');
-            }
+    //             // Simpan gambar baru dan update path ke database
+    //             $validated['image'] = $request->file('image')->store('assignments', 'public');
+    //         }
 
-            // Pastikan hanya mengupdate jika ada perubahan data
-            if (!empty($validated)) {
-                $assignment->update($validated);
-            }
+    //         // Pastikan hanya mengupdate jika ada perubahan data
+    //         if (!empty($validated)) {
+    //             $assignment->update($validated);
+    //         }
 
-            return response()->json([
-                'message' => 'Assignment updated successfully',
-                'data' => [
-                    'id' => $assignment->id,
-                    'finish_note' => $assignment->finish_note,
-                    'date_end' => $assignment->date_end,
-                    'status' => $assignment->status,
-                    'image' => $assignment->image ? asset('storage/' . $assignment->image) : null,
-                ]
-            ], 200);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation error',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'Assignment not found',
-                'error' => $e->getMessage()
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Internal server error',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
+    //         return response()->json([
+    //             'message' => 'Assignment updated successfully',
+    //             'data' => [
+    //                 'id' => $assignment->id,
+    //                 'finish_note' => $assignment->finish_note,
+    //                 'date_end' => $assignment->date_end,
+    //                 'status' => $assignment->status,
+    //                 'image' => $assignment->image ? asset('storage/' . $assignment->image) : null,
+    //             ]
+    //         ], 200);
+    //     } catch (ValidationException $e) {
+    //         return response()->json([
+    //             'message' => 'Validation error',
+    //             'errors' => $e->errors()
+    //         ], 422);
+    //     } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+    //         return response()->json([
+    //             'message' => 'Assignment not found',
+    //             'error' => $e->getMessage()
+    //         ], 404);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'message' => 'Internal server error',
+    //             'error' => $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
     public function destroy(string $id)
     {
         try {
