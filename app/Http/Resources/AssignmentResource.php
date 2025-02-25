@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,15 +28,14 @@ class AssignmentResource extends JsonResource
             'role_to_name'=>$this->roleTo ? $this->roleTo->name : null,
             'title' => $this->title,
             'description' => $this->description,
-            'date_start' => $this->date_start,
+            'date_start' => $this->date_start ? Carbon::parse($this->date_start)->format('Y-m-d H:i:s') : null,
             'level_urgent' => $this->level_urgent,
             'status' => $this->status,
             'image' => $this->image,
             'finish_note'=>$this->finish_note,
-            'date_end' => $this->date_end,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),  // Tambahan field created_at dan updated_at ke dalam response
-
+            'date_end' => $this->date_end ? Carbon::parse($this->date_end)->format('Y-m-d H:i:s') : null,
+            'created_at' => Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
+            'updated_at' => Carbon::parse($this->updated_at)->format('Y-m-d H:i:s'),
 
         ];
     }

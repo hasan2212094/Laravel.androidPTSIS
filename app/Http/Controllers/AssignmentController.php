@@ -46,7 +46,6 @@ class AssignmentController extends Controller
             'role_to' => 'required|exists:roles,id',
             'title' => 'required|string|max:255',
             'description' => 'required',
-            'date_start' => 'required|date',
             'level_urgent' => 'boolean', // Validasi level_urgent harus true/false
             'status' => 'boolean', // Validasi level_urgent harus true/false
         ];
@@ -56,8 +55,9 @@ class AssignmentController extends Controller
             return response()->json(['error' => $validator->messages()], 422);
         }
 
-        $validatedData = $validator->validated();
-        $onlyFields = Arr::only($validatedData, ['user_id_by', 'role_by', 'user_id_to', 'role_to', 'title', 'description', 'date_start', 'level_urgent']); // Masukkan data yang dipilih ke dalam tabel
+        $validatedData = $validator->validated();// Masukkan data yang dipilih ke dalam tabel
+        $onlyFields = Arr::only($validatedData, ['user_id_by', 'role_by', 'user_id_to', 'role_to', 'title', 'description', 'level_urgent']);
+        $validatedData['date_start'] = now();  
         Assignment::create($onlyFields);
 
         // $path = null;
@@ -113,13 +113,15 @@ class AssignmentController extends Controller
             if ($request->has('finish_note')) {
                 $assignment->finish_note = $validated['finish_note'];
             }
-            if ($request->has('date_end')) {
-                $assignment->date_end = $validated['date_end'];
+            if ($request->status == true && !$assignment->date_end) {
+                $assignment->date_end = now(); // Simpan waktu sekarang saat tugas selesai
             }
+        
 
             if ($request->has('status')) {
                 $assignment->status = $validated['status'];
             }
+            $assignment->updated_at = now();
             // Simpan perubahan
             $assignment->save();
 
@@ -299,22 +301,21 @@ class AssignmentController extends Controller
         try {
             // Cari data berdasarkan ID
             $assignment = Assignment::find($id);
-    
+
             // Jika tidak ditemukan, kembalikan response error
             if (!$assignment) {
                 return response()->json(['message' => 'Assignment not found'], 404);
             }
-    
+
             // Hapus gambar dari storage jika ada
             if ($assignment->image) {
                 Storage::disk('public')->delete($assignment->image);
             }
-    
+
             // Hapus assignment dari database
             $assignment->delete();
-    
+
             return response()->json(['message' => 'Assignment deleted successfully'], 200);
-            
         } catch (\Exception $e) {
             return response()->json(['message' => 'Internal server error', 'error' => $e->getMessage()], 500);
         }
