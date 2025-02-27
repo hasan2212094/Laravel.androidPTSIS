@@ -145,11 +145,13 @@ class AssignmentController extends Controller
      */
     public function show(string $id)
     {
-        $assignment = Assignment::find($id);
+        $assignment = Assignment::with('user', 'role')->find($id);
+
         if (!$assignment) {
             return response()->json(['message' => 'Assignment not found'], 404);
         }
-        return response()->json($assignment, 200);
+        return new AssignmentResource($assignment);
+        //return response()->json($assignment, 200);
     }
 
     /**
