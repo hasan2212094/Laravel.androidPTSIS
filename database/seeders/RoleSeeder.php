@@ -16,11 +16,11 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         Role::insert([
-            ['name' => 'HRD'],
-            ['name' => 'admin1'],
-            ['name' => 'admin2'],
-            ['name' => 'admin3'],
-            ['name' => 'user4'],
+            ['name' => 'Admin'],
+            ['name' => 'level1'],
+            ['name' => 'level2'],
+            ['name' => 'level3'],
+            ['name' => 'level4'],
         ]);
     }
 }
