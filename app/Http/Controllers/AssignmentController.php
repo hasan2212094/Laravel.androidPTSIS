@@ -324,4 +324,16 @@ class AssignmentController extends Controller
             return response()->json(['message' => 'Internal server error', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function show_all()
+    {
+        $assignment = Assignment::with('user', 'role')->get();
+
+        if ($assignment->isEmpty()) {
+            return response()->json(['message' => 'No assignments found'], 404);
+        }
+
+        return AssignmentResource::collection($assignment);
+    }
+
 }

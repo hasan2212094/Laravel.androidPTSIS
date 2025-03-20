@@ -66,6 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/roles', [UserController::class, 'role_list']);
 
     Route::get('/assignments', [AssignmentController::class, 'index']);
+    Route::get('/assignments/all', [AssignmentController::class, 'show_all']);
     Route::get('/assignments/{id}', [AssignmentController::class, 'show']);
 
     Route::post('/assignments', [AssignmentController::class, 'store']);
@@ -81,5 +82,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/assignments/forcedelete/{id}', [AssignmentController::class, 'forceDelete']); // Hapus permanen
 
     Route::get('/assignments', [AssignmentController::class, 'index']);
-   
+
 });
