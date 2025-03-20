@@ -80,6 +80,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/assignmentsdata', [AssignmentController::class, 'indexdelete']);// Lihat data terhapus
     Route::post('/assignments/{id}/restore', [AssignmentController::class, 'restore']); // Restore data
     Route::delete('/assignments/forcedelete/{id}', [AssignmentController::class, 'forceDelete']); // Hapus permanen
+    
+    Route::get('/assignments/count/{id}', [AssignmentController::class, 'countAssignments']);
 
     Route::get('/assignments', [AssignmentController::class, 'index']);
 
