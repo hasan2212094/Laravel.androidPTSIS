@@ -66,7 +66,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/roles', [UserController::class, 'role_list']);
 
     Route::get('/assignments', [AssignmentController::class, 'index']);
+    Route::get('/assignments/summary', [AssignmentController::class, 'show_summary']);
     Route::get('/assignments/all', [AssignmentController::class, 'show_all']);
+    Route::get('/assignments/export', [AssignmentController::class, 'exportSummary']);
     Route::get('/assignments/{id}', [AssignmentController::class, 'show']);
 
     Route::post('/assignments', [AssignmentController::class, 'store']);
@@ -80,7 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/assignmentsdata', [AssignmentController::class, 'indexdelete']);// Lihat data terhapus
     Route::post('/assignments/{id}/restore', [AssignmentController::class, 'restore']); // Restore data
     Route::delete('/assignments/forcedelete/{id}', [AssignmentController::class, 'forceDelete']); // Hapus permanen
-    
+
     Route::get('/assignments/count/{id}', [AssignmentController::class, 'countAssignments']);
 
     Route::get('/assignments', [AssignmentController::class, 'index']);
