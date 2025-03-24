@@ -74,14 +74,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/assignments/updatepembuat/{id}', [AssignmentController::class, 'updatePembuat']);
     // Route::put('/assignments/updatepenerima/{id}', [AssignmentController::class, 'updateEnd']);
 
-
     Route::delete('/assignments/{id}', [AssignmentController::class, 'destroy']); // Soft delete
     Route::get('/assignmentsdata', [AssignmentController::class, 'indexdelete']);// Lihat data terhapus
     Route::post('/assignments/{id}/restore', [AssignmentController::class, 'restore']); // Restore data
     Route::delete('/assignments/forcedelete/{id}', [AssignmentController::class, 'forceDelete']); // Hapus permanen
     
-    Route::get('/assignments/count/{id}', [AssignmentController::class, 'countAssignments']);
-
     Route::get('/assignments', [AssignmentController::class, 'index']);
+    Route::get('/assignments/all', [AssignmentController::class, 'show_all']);
    
 });
