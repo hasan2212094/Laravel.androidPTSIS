@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\AssignmentResource;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
+use App\Exports\AssignmentSummaryExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AssignmentController extends Controller
 {
@@ -323,16 +327,24 @@ class AssignmentController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Internal server error', 'error' => $e->getMessage()], 500);
         }
-    }
-    public function show_all()
+    }public function countAssignments(Request $request)
     {
-        $assignment = Assignment::with('user', 'role')->get();
-
-        if ($assignment->isEmpty()) {
-            return response()->json(['message' => 'No assignments found'], 404);
-        }
-
-        return AssignmentResource::collection($assignment);
-    }
+        // Validasi input untuk memastikan role_id diisi dan ada di database
+        $request->validate([
+            'role_id' => 'required|integer|exists:roles,id'
+        ]);
     
+        $role_id = $request->query('role_id');
+    
+        // Hitung jumlah assignment berdasarkan role_id
+        $count = Assignment::where(function ($query) use ($role_id) {
+            $query->where('role_by', $role_id)
+                  ->orWhere('role_to', $role_id);
+        })->count();
+    
+        return response()->json([
+            'message' => $count > 0 ? 'Total assignments counted successfully' : 'No assignments found for this role',
+            'total_assignments' => $count
+        ], 200);
+    }
 }
