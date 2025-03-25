@@ -31,6 +31,7 @@ class AssignmentSummaryExport implements FromCollection, WithHeadings, ShouldAut
             ')
             ->where('a.role_to', '>', $this->roleIdSelected)
             ->groupBy('b.id', 'b.name', 'c.id', 'c.name')
+            ->havingRaw('jumlah_selesai != jumlah_tugas')
             ->orderBy('c.name')
             ->orderBy('b.name')
             ->get();
@@ -43,7 +44,7 @@ class AssignmentSummaryExport implements FromCollection, WithHeadings, ShouldAut
             'Role Name',
             'Total Assignments',
             'Progress',
-            'Completed'
+            'Done'
         ];
     }
 }

@@ -378,6 +378,7 @@ class AssignmentController extends Controller
         ')
             ->where('a.role_to', '>', $roleIdSelected) // Tambahkan filter role
             ->groupBy('b.id', 'b.name', 'c.id', 'c.name')
+            ->havingRaw('jumlah_selesai != jumlah_tugas')
             ->orderBy('c.name')
             ->orderBy('b.name')
             ->get();
