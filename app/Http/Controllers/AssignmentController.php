@@ -327,24 +327,73 @@ class AssignmentController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Internal server error', 'error' => $e->getMessage()], 500);
         }
-    }public function countAssignments(Request $request)
+    }
+    public function countAssignments(Request $request)
     {
         // Validasi input untuk memastikan role_id diisi dan ada di database
         $request->validate([
             'role_id' => 'required|integer|exists:roles,id'
         ]);
-    
+
         $role_id = $request->query('role_id');
-    
+
         // Hitung jumlah assignment berdasarkan role_id
         $count = Assignment::where(function ($query) use ($role_id) {
             $query->where('role_by', $role_id)
-                  ->orWhere('role_to', $role_id);
+                ->orWhere('role_to', $role_id);
         })->count();
-    
+
         return response()->json([
             'message' => $count > 0 ? 'Total assignments counted successfully' : 'No assignments found for this role',
             'total_assignments' => $count
         ], 200);
+    }
+
+    public function show_all()
+    {
+        $assignment = Assignment::with('user', 'role')->get();
+
+        if ($assignment->isEmpty()) {
+            return response()->json(['message' => 'No assignments found'], 404);
+        }
+
+        return AssignmentResource::collection($assignment);
+    }
+
+    public function show_summary(Request $request): JsonResponse
+    {
+        $roleIdSelected = $request->input('role_id_selected', 0); // Default 0 jika tidak dikirim
+
+        $assignments = DB::table('assignments as a')
+            ->leftJoin('users as b', 'a.user_id_to', '=', 'b.id')
+            ->leftJoin('roles as c', 'a.role_to', '=', 'c.id')
+            ->selectRaw('
+            b.id AS userToId,
+            b.name AS userToName,
+            c.id AS roleToId,
+            c.name AS roleToName,
+            COUNT(*) AS jumlah_tugas,
+            SUM(CASE WHEN a.status = 0 THEN 1 ELSE 0 END) AS jumlah_on_progress,
+            SUM(CASE WHEN a.status = 1 THEN 1 ELSE 0 END) AS jumlah_selesai
+        ')
+            ->where('a.role_to', '>', $roleIdSelected) // Tambahkan filter role
+            ->groupBy('b.id', 'b.name', 'c.id', 'c.name')
+            ->havingRaw('jumlah_selesai != jumlah_tugas')
+            ->orderBy('c.name')
+            ->orderBy('b.name')
+            ->get();
+
+        if ($assignments->isEmpty()) {
+            return response()->json(['message' => 'No assignments found'], 404);
+        }
+
+        return response()->json($assignments);
+    }
+
+    public function exportSummary(Request $request)
+    {
+        $roleIdSelected = $request->input('role_id_selected', 0);
+
+        return Excel::download(new AssignmentSummaryExport($roleIdSelected), 'assignment_summary.xlsx');
     }
 }

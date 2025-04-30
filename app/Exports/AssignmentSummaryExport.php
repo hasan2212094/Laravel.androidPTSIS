@@ -43,7 +43,7 @@ class AssignmentSummaryExport implements FromCollection, WithHeadings, ShouldAut
             'Role Name',
             'Total Assignments',
             'Progress',
-            'Completed'
+            'Done'
         ];
     }
 }
