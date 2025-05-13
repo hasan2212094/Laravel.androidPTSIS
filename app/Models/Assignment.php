@@ -26,7 +26,7 @@ class Assignment extends Model
         'date_end',
     ];
 
-    protected $dates = ['deleted_at', 'date_start', 'date_end']; 
+    protected $dates = ['deleted_at', 'date_start', 'date_end'];
     public $timestamps = true; // Pastikan timestamps aktif
 
     protected static function boot()
@@ -72,5 +72,16 @@ class Assignment extends Model
     public function roleTo()
     {
         return $this->belongsTo(Role::class, 'role_to');
+    }
+
+    public function getStatusLabelAttribute()
+    {
+        $statusLabels = [
+            0 => 'Unfinish',
+            1 => 'Onprogress',
+            2 => 'Finish',
+        ];
+
+        return $statusLabels[$this->status] ?? 'Unknown';
     }
 }

@@ -51,7 +51,7 @@ class AssignmentController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required',
             'level_urgent' => 'boolean', // Validasi level_urgent harus true/false
-            'status' => 'boolean', // Validasi level_urgent harus true/false
+            'status' => 'integer', 
         ];
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $validationRules);
 
@@ -98,7 +98,7 @@ class AssignmentController extends Controller
             $validated = $request->validate([
                 'image' => 'nullable|image|mimetypes:image/*|max:2048',
                 'finish_note' => 'sometimes|required|string|max:255',
-                'status' => 'boolean',
+                'status' => 'integer',
             ]);
 
             // Handle image upload jika ada file gambar yang dikirim
@@ -116,32 +116,24 @@ class AssignmentController extends Controller
             if ($request->has('finish_note')) {
                 $assignment->finish_note = $validated['finish_note'];
             }
-            if ($request->status == true && !$assignment->date_end) {
+
+            if ($request->status == 1 && !$assignment->date_end) {
                 $assignment->date_end = now(); // Simpan waktu sekarang saat tugas selesai
             }
-
 
             if ($request->has('status')) {
                 $assignment->status = $validated['status'];
             }
-            $assignment->date_end = now();
+
+
             $assignment->updated_at = now();
+
             // Simpan perubahan
             $assignment->save();
 
-            // Response sukses
-            return response()->json([
-                'message' => 'Assignment updated successfully',
-                'id' => $assignment->id,
-                'finish_note' => $assignment->finish_note,
-                'date_end' => $assignment->date_end,
-                'status' => $assignment->status,
-                'image' => asset('storage/' . $assignment->image),
-            ], 200);
-        } catch (ValidationException $e) {
-            return response()->json(['message' => 'Validation error', 'errors' => $e->errors()], 422);
+            return response()->json(['message' => 'Assignment updated successfully'], 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Internal server error', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => 'Error updating assignment', 'error' => $e->getMessage()], 500);
         }
     }
     /**
@@ -176,7 +168,7 @@ class AssignmentController extends Controller
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
                 'level_urgent' => 'boolean',
-                'status' => 'boolean',
+                'status' => 'integer',
             ]);
 
             $validated['date_start'] = now();
@@ -373,8 +365,9 @@ class AssignmentController extends Controller
             c.id AS roleToId,
             c.name AS roleToName,
             COUNT(*) AS jumlah_tugas,
-            SUM(CASE WHEN a.status = 0 THEN 1 ELSE 0 END) AS jumlah_on_progress,
-            SUM(CASE WHEN a.status = 1 THEN 1 ELSE 0 END) AS jumlah_selesai
+            SUM(CASE WHEN a.status = 0 THEN 1 ELSE 0 END) AS jumlah_Unfinish,
+            SUM(CASE WHEN a.status = 1 THEN 1 ELSE 0 END) AS jumlah_On_Progress,
+            SUM(CASE WHEN a.status = 2 THEN 1 ELSE 1 END) AS jumlah_selesai
         ')
             ->where('a.role_to', '>', $roleIdSelected) // Tambahkan filter role
             ->groupBy('b.id', 'b.name', 'c.id', 'c.name')

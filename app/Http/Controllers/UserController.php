@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\Userresource;
+use App\Http\Resources\UserResource;
 use App\Http\Resources\RoleResource;
 
 use App\Models\User;
