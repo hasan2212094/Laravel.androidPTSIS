@@ -14,6 +14,7 @@ use Illuminate\Http\JsonResponse;
 use App\Exports\AssignmentSummaryExport;
 use Maatwebsite\Excel\Facades\Excel;
 
+
 class AssignmentController extends Controller
 {
     /**
@@ -51,7 +52,7 @@ class AssignmentController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required',
             'level_urgent' => 'boolean', // Validasi level_urgent harus true/false
-            'status' => 'integer', 
+            'status' => 'integer',
         ];
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $validationRules);
 
@@ -356,6 +357,7 @@ class AssignmentController extends Controller
     {
         $roleIdSelected = $request->input('role_id_selected', 0); // Default 0 jika tidak dikirim
 
+
         $assignments = DB::table('assignments as a')
             ->leftJoin('users as b', 'a.user_id_to', '=', 'b.id')
             ->leftJoin('roles as c', 'a.role_to', '=', 'c.id')
@@ -367,9 +369,9 @@ class AssignmentController extends Controller
             COUNT(*) AS jumlah_tugas,
             SUM(CASE WHEN a.status = 0 THEN 1 ELSE 0 END) AS jumlah_Unfinish,
             SUM(CASE WHEN a.status = 1 THEN 1 ELSE 0 END) AS jumlah_On_Progress,
-            SUM(CASE WHEN a.status = 2 THEN 1 ELSE 1 END) AS jumlah_selesai
+            SUM(CASE WHEN a.status = 2 THEN 1 ELSE 0 END) AS jumlah_selesai
         ')
-            ->where('a.role_to', '>', $roleIdSelected) // Tambahkan filter role
+            ->where('a.role_to', '>=', $roleIdSelected) // Tambahkan filter role
             ->groupBy('b.id', 'b.name', 'c.id', 'c.name')
             ->havingRaw('jumlah_selesai != jumlah_tugas')
             ->orderBy('c.name')
@@ -377,7 +379,7 @@ class AssignmentController extends Controller
             ->get();
 
         if ($assignments->isEmpty()) {
-            return response()->json(['message' => 'No assignments found'], 404);
+            return response()->json(['message' => 'No assignments found', 'roleIdSelected' => $roleIdSelected, "data" => $assignments]);
         }
 
         return response()->json($assignments);
