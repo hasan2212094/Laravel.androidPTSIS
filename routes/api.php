@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssignmentController;
@@ -78,12 +80,16 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::put('/assignments/updatepenerima/{id}', [AssignmentController::class, 'updateEnd']);
 
     Route::delete('/assignments/{id}', [AssignmentController::class, 'destroy']); // Soft delete
-    Route::get('/assignmentsdata', [AssignmentController::class, 'indexdelete']);// Lihat data terhapus
+    Route::get('/assignmentsdata', [AssignmentController::class, 'indexdelete']); // Lihat data terhapus
     Route::post('/assignments/{id}/restore', [AssignmentController::class, 'restore']); // Restore data
     Route::delete('/assignments/forcedelete/{id}', [AssignmentController::class, 'forceDelete']); // Hapus permanen
-    
+
     Route::get('/assignments/count/{id}', [AssignmentController::class, 'countAssignments']);
 
     Route::get('/assignments', [AssignmentController::class, 'index']);
-   
+
+   Route::post('/send-notification', function (Request $request) {
+    Log::info('Notifikasi diterima: ' . $request->message);
+    return response()->json(['status' => 'success', 'data' => $request->all()]);
+});
 });
