@@ -88,8 +88,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/assignments', [AssignmentController::class, 'index']);
 
-   Route::post('/send-notification', function (Request $request) {
-    Log::info('Notifikasi diterima: ' . $request->message);
-    return response()->json(['status' => 'success', 'data' => $request->all()]);
-});
+    Route::post('/send-notification', function (Request $request) {
+        Log::info('Notifikasi diterima: ' . $request->message);
+        return response()->json(['status' => 'success', 'data' => $request->all()]);
+    });
 });

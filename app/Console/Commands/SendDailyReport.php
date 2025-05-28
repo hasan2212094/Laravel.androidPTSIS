@@ -31,7 +31,7 @@ class SendDailyReport extends Command
      public function handle()
     {
         // Contoh pemanggilan API POST
-        $response = Http::post('https://your-api.test/api/send-notification', [
+        $response = Http::post('https://https://sribaruindahsejahtera.net/api/send-notification', [
             'message' => 'Notifikasi ingat pesan tugas anda',
             'title' => 'success',
         ]);
