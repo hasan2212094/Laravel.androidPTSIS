@@ -357,7 +357,6 @@ class AssignmentController extends Controller
     {
         $roleIdSelected = $request->input('role_id_selected', 0); // Default 0 jika tidak dikirim
 
-
         $assignments = DB::table('assignments as a')
             ->leftJoin('users as b', 'a.user_id_to', '=', 'b.id')
             ->leftJoin('roles as c', 'a.role_to', '=', 'c.id')
@@ -371,7 +370,7 @@ class AssignmentController extends Controller
             SUM(CASE WHEN a.status = 1 THEN 1 ELSE 0 END) AS jumlah_On_Progress,
             SUM(CASE WHEN a.status = 2 THEN 1 ELSE 0 END) AS jumlah_selesai
         ')
-            ->where('a.role_to', '>=', $roleIdSelected) // Tambahkan filter role
+            ->where('a.role_to', '>=', $roleIdSelected)
             ->groupBy('b.id', 'b.name', 'c.id', 'c.name')
             ->havingRaw('jumlah_selesai != jumlah_tugas')
             ->orderBy('c.name')
@@ -379,8 +378,26 @@ class AssignmentController extends Controller
             ->get();
 
         if ($assignments->isEmpty()) {
-            return response()->json(['message' => 'No assignments found', 'roleIdSelected' => $roleIdSelected, "data" => $assignments]);
+            return response()->json([
+                'message' => 'No assignments found',
+                'roleIdSelected' => $roleIdSelected,
+                'data' => $assignments
+            ]);
         }
+
+        // Casting nilai agar integer (agar tidak jadi string di hosting)
+        $assignments = $assignments->map(function ($item) {
+            return [
+                'userToId' => (int) $item->userToId,
+                'userToName' => $item->userToName,
+                'roleToId' => (int) $item->roleToId,
+                'roleToName' => $item->roleToName,
+                'jumlah_tugas' => (int) $item->jumlah_tugas,
+                'jumlah_Unfinish' => (int) $item->jumlah_Unfinish,
+                'jumlah_On_Progress' => (int) $item->jumlah_On_Progress,
+                'jumlah_selesai' => (int) $item->jumlah_selesai,
+            ];
+        });
 
         return response()->json($assignments);
     }
