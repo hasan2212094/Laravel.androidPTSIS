@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,8 @@ use App\Http\Controllers\AssignmentController;
 // Route::delete('/users/{id}/force', [UserController::class, 'forceDelete']); // Hapus permanen
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::post('/send-notification', [NotificationController::class, 'send']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -88,8 +91,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/assignments', [AssignmentController::class, 'index']);
 
-    Route::post('/send-notification', function (Request $request) {
-        Log::info('Notifikasi diterima: ' . $request->message);
-        return response()->json(['status' => 'success', 'data' => $request->all()]);
-    });
+//    Route::post('/send-notification', function (Request $request) {
+//     Log::info('Notifikasi diterima: ' . $request->message);
+//     return response()->json(['status' => 'success', 'data' => $request->all()]);
+// });
 });
