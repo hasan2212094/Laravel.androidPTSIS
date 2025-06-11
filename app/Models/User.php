@@ -50,6 +50,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'role_id' => 'integer',
     ];
 
     protected $dates = ['deleted_at']; // Tentukan deleted_at sebagai tanggal

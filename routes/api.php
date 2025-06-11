@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\QualityController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\NotificationController;
 
@@ -91,8 +92,18 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/assignments', [AssignmentController::class, 'index']);
 
-//    Route::post('/send-notification', function (Request $request) {
-//     Log::info('Notifikasi diterima: ' . $request->message);
-//     return response()->json(['status' => 'success', 'data' => $request->all()]);
-// });
+
+    Route::get('/qualities', [QualityController::class, 'index']); // ambil semua
+    Route::post('/qualities', [QualityController::class, 'store']); // simpan baru
+
+    Route::get('/qualities/{id}', [QualityController::class, 'show']);      // detail
+    Route::put('/qualities/{id}', [QualityController::class, 'update']);    // update
+    Route::delete('/qualities/{id}', [QualityController::class, 'destroy']); // hapus
+
+
+    //    Route::post('/send-notification', function (Request $request) {
+    //     Log::info('Notifikasi diterima: ' . $request->message);
+    //     return response()->json(['status' => 'success', 'data' => $request->all()]);
+    // });
+
 });

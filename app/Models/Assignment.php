@@ -26,6 +26,14 @@ class Assignment extends Model
         'date_end',
     ];
 
+    protected $casts = [
+        'user_id_by' => 'integer',
+        'role_by' => 'integer',
+        'user_id_to' => 'integer',
+        'role_to' => 'integer',
+        'status' => 'integer',
+        'level_urgent' => 'integer',
+    ];
     protected $dates = ['deleted_at', 'date_start', 'date_end'];
     public $timestamps = true; // Pastikan timestamps aktif
 
