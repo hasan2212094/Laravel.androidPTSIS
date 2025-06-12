@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Quality;
 use Illuminate\Http\Request;
+use App\Http\Resources\QualityResource;
+use Illuminate\Support\Facades\Storage;
 
 class QualityController extends Controller
 {
     public function index()
     {
-        return response()->json(Quality::all());
+        return QualityResource::collection(Quality::all());
     }
 
     public function store(Request $request)
@@ -18,7 +20,7 @@ class QualityController extends Controller
             'project' => 'required',
             'no_wo' => 'required',
             'description' => 'required',
-            'responds' => 'required|boolean', // sudah boolean, bukan foreign key lagi
+            'responds' => 'required|boolean',
             'image' => 'nullable|image|mimes:jpg,jpeg,png',
             'date' => 'required|date',
         ]);
@@ -32,27 +34,20 @@ class QualityController extends Controller
             'project' => $request->project,
             'no_wo' => $request->no_wo,
             'description' => $request->description,
-            'responds' => $request->responds, // true/false
+            'responds' => $request->responds,
             'image' => $imagePath,
             'date' => $request->date,
         ]);
 
-        return response()->json(['message' => 'Data berhasil disimpan', 'data' => $quality], 201);
+        return response()->json([
+            'message' => 'Data berhasil disimpan',
+            'data' => new QualityResource($quality)
+        ], 201);
     }
 
     public function show(Quality $quality)
     {
-        if (!$quality) {
-            return response()->json([
-                'message' => 'Data tidak ditemukan',
-                'data' => null
-            ], 404);
-        }
-
-        return response()->json([
-            'message' => 'Data ditemukan',
-            'data' => $quality
-        ]);
+        return new QualityResource($quality);
     }
 
     public function update(Request $request, Quality $quality)
@@ -66,10 +61,14 @@ class QualityController extends Controller
             'image' => 'nullable|image|mimes:jpg,jpeg,png',
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['project', 'no_wo', 'description', 'responds', 'date']);
 
-        // Optional: handle update image
         if ($request->hasFile('image')) {
+            // Hapus file lama jika ada
+            if ($quality->image) {
+                Storage::disk('public')->delete($quality->image);
+            }
+
             $data['image'] = $request->file('image')->store('images', 'public');
         }
 
@@ -77,16 +76,44 @@ class QualityController extends Controller
 
         return response()->json([
             'message' => 'Data berhasil diperbarui',
-            'data' => $quality
-        ], 200);
+            'data' => new QualityResource($quality)
+        ]);
     }
 
     public function destroy(Quality $quality)
     {
         $quality->delete();
+        return response()->json([
+            'message' => 'Data berhasil dihapus (soft delete)'
+        ]);
+    }
+
+    public function restore($id)
+    {
+        $quality = Quality::withTrashed()->findOrFail($id);
+        $quality->restore();
 
         return response()->json([
-            'message' => 'Data berhasil dihapus'
-        ], 200);
+            'message' => 'Data berhasil direstore',
+            'data' => new QualityResource($quality)
+        ]);
+    }
+
+    public function forceDelete($id)
+    {
+        $quality = Quality::withTrashed()->findOrFail($id);
+        $quality->forceDelete();
+
+        return response()->json(['message' => 'Data dihapus permanen.']);
+    }
+
+    public function indexdelete()
+    {
+        $qualities = Quality::withTrashed()->get();
+
+        return response()->json([
+            'message' => 'Data ditemukan',
+            'data' => QualityResource::collection($qualities)
+        ]);
     }
 }

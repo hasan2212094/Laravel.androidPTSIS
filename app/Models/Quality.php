@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Quality extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
+
     protected $fillable = [
         'project',
         'no_wo',
@@ -15,5 +16,10 @@ class Quality extends Model
         'responds',
         'image',
         'date',
+    ];
+
+    protected $casts = [
+        'responds' => 'boolean',
+        'date' => 'date',
     ];
 }
