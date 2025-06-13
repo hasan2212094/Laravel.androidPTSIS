@@ -21,6 +21,7 @@ class QualityResource extends JsonResource
             'description' => $this->description,
             'responds' => $this->responds,
             'image_url' => $this->image ? asset('storage/' . $this->image) : null,
+            'image' => $this->image,
             'date' => $this->date,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
