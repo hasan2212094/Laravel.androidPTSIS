@@ -27,7 +27,7 @@ class QualityController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images', 'public');
+            $imagePath = $request->file('image')->store('qualities', 'public');
         }
 
         $quality = Quality::create([
