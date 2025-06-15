@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Quality;
 use Illuminate\Http\Request;
 use App\Http\Resources\QualityResource;
+use App\http\Resources\QualityViewerResource;
 use Illuminate\Support\Facades\Storage;
+use App\Models\QualityViewer;
 
 class QualityController extends Controller
 {
@@ -56,12 +58,11 @@ class QualityController extends Controller
             'project' => 'required',
             'no_wo' => 'required',
             'description' => 'required',
-            'responds' => 'required|boolean',
             'date' => 'required|date',
             'image' => 'nullable|image|mimes:jpg,jpeg,png',
         ]);
 
-        $data = $request->only(['project', 'no_wo', 'description', 'responds', 'date']);
+        $data = $request->only(['project', 'no_wo', 'description', 'date']);
 
         if ($request->hasFile('image')) {
             // Hapus file lama jika ada
@@ -69,7 +70,7 @@ class QualityController extends Controller
                 Storage::disk('public')->delete($quality->image);
             }
 
-            $data['image'] = $request->file('image')->store('images', 'public');
+            $data['image'] = $request->file('image')->store('qualities', 'public');
         }
 
         $quality->update($data);
@@ -115,5 +116,45 @@ class QualityController extends Controller
             'message' => 'Data ditemukan',
             'data' => QualityResource::collection($qualities)
         ]);
+    }
+
+    public function showViewer($qualityId)
+    {
+        $viewers = QualityViewer::where('quality_id', $qualityId)->get();
+
+        return response()->json([
+            'message' => 'Data viewers retrieved successfully',
+            'data' => QualityViewerResource::collection($viewers)
+        ], 200);
+    }
+
+    public function storeViewer(Request $request, $qualityId)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $existingViewer = QualityViewer::where('quality_id', $qualityId)
+            ->where('user_id', $request->user_id)
+            ->first();
+
+        if ($existingViewer) {
+            return response()->json([
+                'data' => new QualityViewerResource($existingViewer)
+            ], 201);
+        }
+
+
+        Quality::where('id', $qualityId)->update(['responds' => true]);
+
+        $viewer = QualityViewer::create([
+            'quality_id' => $qualityId,
+            'user_id' => $request->user_id,
+        ]);
+
+        return response()->json([
+            'message' => 'Data viewer berhasil disimpan',
+            'data' => new QualityViewerResource($viewer)
+        ], 201);
     }
 }

@@ -97,13 +97,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/qualities', [QualityController::class, 'store']); // simpan baru
 
     Route::get('/qualities/{quality}', [QualityController::class, 'show']);     // detail
-    Route::put('/qualities/{quality}', [QualityController::class, 'update']);    // update
+    Route::post('/qualities/update/{quality}', [QualityController::class, 'update']);    // update
 
     Route::get('/qualitiesdelete', [QualityController::class, 'indexdelete']); // ambil semua
     Route::delete('/qualities/{quality}', [QualityController::class, 'destroy']); // hapus sementara
-    Route::put('/qualities/restore/{id}', [QualityController::class, 'restore']);//kembalikan data yang hilang
-    Route::delete('/qualities/force-delete/{id}', [QualityController::class, 'forceDelete']);//hapus permanet
+    Route::put('/qualities/restore/{id}', [QualityController::class, 'restore']); //kembalikan data yang hilang
+    Route::delete('/qualities/force-delete/{id}', [QualityController::class, 'forceDelete']); //hapus permanet
 
+    Route::get('/qualities/viewers/{qualityId}', [QualityController::class, 'showViewer']);
+    Route::post('/qualities/viewers/{qualityId}', [QualityController::class, 'storeViewer']);
 
     //    Route::post('/send-notification', function (Request $request) {
     //     Log::info('Notifikasi diterima: ' . $request->message);
