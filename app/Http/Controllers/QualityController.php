@@ -69,7 +69,7 @@ class QualityController extends Controller
                 Storage::disk('public')->delete($quality->image);
             }
 
-            $data['image'] = $request->file('image')->store('images', 'public');
+            $data['image'] = $request->file('image')->store('qualities', 'public');
         }
 
         $quality->update($data);
