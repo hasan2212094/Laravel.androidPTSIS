@@ -22,4 +22,8 @@ class Quality extends Model
         'responds' => 'boolean',
         'date' => 'date',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

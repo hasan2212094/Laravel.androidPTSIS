@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Exports\QualityExport;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
@@ -106,6 +108,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/qualities/viewers/{qualityId}', [QualityController::class, 'showViewer']);
     Route::post('/qualities/viewers/{qualityId}', [QualityController::class, 'storeViewer']);
+
+    Route::get('/export-quality', function () {
+    return Excel::download(new QualityExport, 'quality.xlsx');
+});
 
     //    Route::post('/send-notification', function (Request $request) {
     //     Log::info('Notifikasi diterima: ' . $request->message);

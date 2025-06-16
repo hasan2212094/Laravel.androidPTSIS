@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\QualityExport;
 use App\Models\Quality;
 use Illuminate\Http\Request;
-use App\Http\Resources\QualityResource;
-use App\http\Resources\QualityViewerResource;
-use Illuminate\Support\Facades\Storage;
 use App\Models\QualityViewer;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Resources\QualityResource;
+use Illuminate\Support\Facades\Storage;
+use App\http\Resources\QualityViewerResource;
 
 class QualityController extends Controller
 {
@@ -156,5 +158,9 @@ class QualityController extends Controller
             'message' => 'Data viewer berhasil disimpan',
             'data' => new QualityViewerResource($viewer)
         ], 201);
+    }
+  public function exportSummary()
+    {
+        return Excel::download(new QualityExport, 'quality-summary.xlsx');
     }
 }
