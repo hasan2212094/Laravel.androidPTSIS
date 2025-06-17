@@ -109,10 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/qualities/viewers/{qualityId}', [QualityController::class, 'showViewer']);
     Route::post('/qualities/viewers/{qualityId}', [QualityController::class, 'storeViewer']);
 
-    Route::get('/export-quality', function () {
-    return Excel::download(new QualityExport, 'quality.xlsx');
-});
-
+    Route::get('qualitiesexport', [QualityController::class, 'export']);
     //    Route::post('/send-notification', function (Request $request) {
     //     Log::info('Notifikasi diterima: ' . $request->message);
     //     return response()->json(['status' => 'success', 'data' => $request->all()]);

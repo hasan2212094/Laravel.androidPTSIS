@@ -159,8 +159,8 @@ class QualityController extends Controller
             'data' => new QualityViewerResource($viewer)
         ], 201);
     }
-  public function exportSummary()
+    public function export()
     {
-        return Excel::download(new QualityExport, 'quality-summary.xlsx');
+        return Excel::download(new QualityExport, 'qualities.xlsx');
     }
 }
