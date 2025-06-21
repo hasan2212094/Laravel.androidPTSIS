@@ -1,0 +1,76 @@
+[33m44ed1d8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31mremote/main[m[33m, [m[1;31mremote/HEAD[m[33m)[m  update export excel 1
+[33me3df74d[m update export excel QC
+[33m1097f88[m Merge branch 'main' of https://github.com/hasan2212094/Laravel.androidPTSIS
+[33mca3d252[m error
+[33m719be33[m quality crud+viewer
+[33m29a9dc0[m tambah image di quailty resource
+[33mf0dfb1e[m tambah folder qualites baut simpan image nya
+[33m8ca43a4[m update Quality 2
+[33m56097c7[m update Quality
+[33md0f78f3[m Selesaikan konflik setelah pull
+[33m6c578e7[m perbaikan summary, error karna int di hosting jadi string, harus di set di laravelnya
+[33m022c41c[m perbaikan error ga bisa login
+[33m044ec88[m update percobaan
+[33m12e827d[m send notif hosting
+[33m1ec578e[m send notif
+[33m0809819[m  cron job notifikasi
+[33m026245a[m perbaikan terkait penambahan status
+[33mc52af82[m file migrate baru untuk edit status jadi intger
+[33md5fa1cf[m uppdate status jadi integer
+[33m816449c[m update finish
+[33md4eaffe[m salah huruf kecil di UserResource
+[33m10ad9f9[m tidak munculkan tugas selesai di dashboard
+[33m612e4d4[m Merge branch 'main' of https://github.com/hasan2212094/Laravel.androidPTSIS
+[33mee1db6a[m Menyimpan perubahan sebelum merge
+[33mec693da[m fitur excel
+[33mde1dfd6[m Merge branch 'main' of https://github.com/hasan2212094/Laravel.androidPTSIS
+[33m96227ca[m route show all
+[33md1605ef[m update controller dan Api
+[33m495c031[m update role
+[33me41c957[m fix response assignment by ID
+[33mf6af365[m perbaikan format tanggal
+[33m33dbdda[m update otomatis date_start dan date_end
+[33m37d8c33[m update hapus updatepenerima
+[33m1b9d32c[m update softdelete assignment
+[33m627d7c2[m  update terbaru
+[33m69ed503[m update edit pembuat dan edit selesai
+[33m5afeb6f[m update status
+[33mde2d542[m lanjut error updatestatus
+[33mde45745[m update image masih error
+[33m84a6082[m .
+[33m8bb8a4f[m Merge branch 'main' of https://github.com/hasan2212094/Laravel.androidPTSIS
+[33m76e1f01[m error route
+[33m34ae8ff[m index assignment
+[33m677131b[m update
+[33m6bc3725[m enhance index
+[33ma981b3e[m controller assignment
+[33mcf9bee4[m update
+[33m057cb14[m update assignment contoller validate
+[33ma359f1b[m add role_id
+[33m6eae98e[m  error role_id User
+[33mdf715ea[m Update image cara masukan boolean menggunakan numerik 1(true) dan 0(false)
+[33m7666dd5[m fixed assignment validator
+[33m3da05b5[m update image, level_urgent, status
+[33m252d17f[m Merge branch 'main' of https://github.com/hasan2212094/Laravel.androidPTSIS
+[33mc590c2b[m crud user - 1
+[33m0961587[m update massage error
+[33m18cf7aa[m perbaikan response login
+[33m62f026b[m update Assignment CRUD
+[33mb529477[m update role seed
+[33mdc3a49c[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mtmp[m[33m)[m merge rodin
+[33ma982a8d[m cek rodin
+[33m16a7541[m penambahan role name dan seed hrd
+[33me3f5533[m update role_name
+[33m99c75e2[m update role name dan seed hrd
+[33mdf643b6[m perbaikan error token
+[33meb08187[m update role name
+[33m636a039[m add id to response after login
+[33m7c168aa[m update seed role
+[33mb5dd0dd[m implementasi token ke api
+[33m4a0b857[m Update terbaru
+[33m2ae5e01[m Update listuser crud
+[33m3e0d822[m update list user CRUD
+[33m6046550[m handle error register
+[33m9757ee2[m tambah response saat login
+[33maf44378[m Deskripsi perubahan
+[33m8c2b0f1[m first commit

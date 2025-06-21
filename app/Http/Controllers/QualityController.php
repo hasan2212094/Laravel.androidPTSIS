@@ -22,49 +22,58 @@ class QualityController extends Controller
     {
         $request->validate([
             'project' => 'required',
-            'no_wo' => 'required',
+            'no_wo' => 'required|exists:workorders,id',
             'description' => 'required',
             'responds' => 'required|boolean',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             'date' => 'required|date',
+            'status' => 'integer',
         ]);
-
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('qualities', 'public');
-        }
-
         $quality = Quality::create([
             'project' => $request->project,
             'no_wo' => $request->no_wo,
             'description' => $request->description,
             'responds' => $request->responds,
-            'image' => $imagePath,
             'date' => $request->date,
+            'status' => $request->status ?? 0,
         ]);
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('qualities', 'public');
+                $quality->images()->create(['image_path' => $path]);
+            }
+        }
 
         return response()->json([
             'message' => 'Data berhasil disimpan',
-            'data' => new QualityResource($quality)
+            'data' => new QualityResource($quality->load(['workorder', 'images'])),
         ], 201);
     }
 
     public function show(Quality $quality)
     {
-        return new QualityResource($quality);
+        $quality->load('workorder'); // memuat relasi
+
+        return response()->json([
+            'message' => 'Data ditemukan',
+            'data' => new QualityResource($quality),
+        ]);
     }
 
     public function update(Request $request, Quality $quality)
     {
         $request->validate([
             'project' => 'required',
-            'no_wo' => 'required',
+            'no_wo' => 'required|exists:workorders,id',
             'description' => 'required',
             'date' => 'required|date',
             'image' => 'nullable|image|mimes:jpg,jpeg,png',
+            'status' => 'integer',
         ]);
 
-        $data = $request->only(['project', 'no_wo', 'description', 'date']);
+        $data = $request->only(['project', 'no_wo', 'description', 'date', 'status']);
 
         if ($request->hasFile('image')) {
             // Hapus file lama jika ada
@@ -159,7 +168,7 @@ class QualityController extends Controller
             'data' => new QualityViewerResource($viewer)
         ], 201);
     }
-    public function export()
+  public function exportSummary()
     {
         return Excel::download(new QualityExport, 'qualities.xlsx');
     }

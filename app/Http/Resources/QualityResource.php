@@ -18,14 +18,19 @@ class QualityResource extends JsonResource
             'id' => $this->id,
             'project' => $this->project,
             'no_wo' => $this->no_wo,
+            'no_wo_nomor' => $this->workorder?->nomor, // relasi ke workorders.nomor
             'description' => $this->description,
-            'responds' => $this->responds,
-            'image_url' => $this->image ? asset('storage/' . $this->image) : null,
-            'image' => $this->image,
+            'responds' => (bool) $this->responds,
+            // 'image_url' => asset('storage/' . $this->image),
+            // 
+            'image_urls' => $this->images->map(function ($img) {
+                return asset('storage/' . $img->image_path);
+            }),
             'date' => $this->date,
+            'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'deleted_at' => $this->deleted_at, // hanya akan muncul jika pakai withTrashed()
+            'deleted_at' => $this->deleted_at,
         ];
     }
 }
