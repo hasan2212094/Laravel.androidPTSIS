@@ -10,6 +10,7 @@ class QualityImage extends Model
     use HasFactory;
     protected $fillable = ['quality_id', 'image_path'];
 
+
     public function quality()
     {
         return $this->belongsTo(Quality::class);

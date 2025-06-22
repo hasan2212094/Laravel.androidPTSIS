@@ -42,6 +42,6 @@ class Quality extends Model
     }
     public function images()
     {
-        return $this->hasMany(QualityImage::class);
+        return $this->hasMany(QualityImage::class, 'quality_id');
     }
 }

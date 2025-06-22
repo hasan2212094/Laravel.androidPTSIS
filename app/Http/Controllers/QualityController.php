@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\QualityExport;
 use App\Models\Quality;
 use Illuminate\Http\Request;
 use App\Models\QualityViewer;
+use App\Exports\QualityExport;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\QualityResource;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +16,11 @@ class QualityController extends Controller
 {
     public function index()
     {
-        return QualityResource::collection(Quality::all());
+        $data = QualityResource::collection(Quality::with(['workorder', 'images'])->get());
+        return response()->json([
+            'status' => true,
+            'data' => $data,
+        ]);
     }
 
     public function store(Request $request)
@@ -31,18 +36,22 @@ class QualityController extends Controller
             'status' => 'integer',
         ]);
         $quality = Quality::create([
-            'project' => $request->project,
-            'no_wo' => $request->no_wo,
-            'description' => $request->description,
+            'project' =>(int) $request->project,
+            'no_wo' => (int)$request->no_wo,
+            'description' => (int)$request->description,
             'responds' => $request->responds,
             'date' => $request->date,
             'status' => $request->status ?? 0,
         ]);
 
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('qualities', 'public');
-                $quality->images()->create(['image_path' => $path]);
+        $images = $request->file('images');
+
+        if (is_array($images)) {
+            foreach ($images as $image) {
+                if ($image instanceof \Illuminate\Http\UploadedFile && $image->isValid()) {
+                    $path = $image->store('quality_images', 'public');
+                    $quality->images()->create(['image_path' => $path]);
+                }
             }
         }
 
@@ -54,7 +63,7 @@ class QualityController extends Controller
 
     public function show(Quality $quality)
     {
-        $quality->load('workorder'); // memuat relasi
+        $quality->load(['workorder', 'images']);
 
         return response()->json([
             'message' => 'Data ditemukan',
@@ -69,19 +78,25 @@ class QualityController extends Controller
             'no_wo' => 'required|exists:workorders,id',
             'description' => 'required',
             'date' => 'required|date',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             'status' => 'integer',
         ]);
 
         $data = $request->only(['project', 'no_wo', 'description', 'date', 'status']);
-
-        if ($request->hasFile('image')) {
-            // Hapus file lama jika ada
-            if ($quality->image) {
-                Storage::disk('public')->delete($quality->image);
+        if ($request->hasFile('images')) {
+            // Hapus semua gambar lama kalau perlu
+            foreach ($quality->images as $img) {
+                Storage::disk('public')->delete($img->image_path);
+                $img->delete();
             }
 
-            $data['image'] = $request->file('image')->store('qualities', 'public');
+            foreach ($request->file('images') as $image) {
+                if ($image->isValid()) {
+                    $path = $image->store('quality_images', 'public');
+                    $quality->images()->create(['image_path' => $path]);
+                }
+            }
         }
 
         $quality->update($data);
@@ -168,7 +183,7 @@ class QualityController extends Controller
             'data' => new QualityViewerResource($viewer)
         ], 201);
     }
-  public function exportSummary()
+    public function exportSummary()
     {
         return Excel::download(new QualityExport, 'qualities.xlsx');
     }
