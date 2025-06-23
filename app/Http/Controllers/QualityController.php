@@ -43,9 +43,9 @@ class QualityController extends Controller
             'status' => 'integer',
         ]);
         $quality = Quality::create([
-            'project' =>(int) $request->project,
+            'project' =>$request->project,
             'no_wo' => (int)$request->no_wo,
-            'description' => (int)$request->description,
+            'description' => $request->description,
             'responds' => $request->responds,
             'date' => $request->date,
             'status' => $request->status ?? 0,
