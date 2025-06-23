@@ -110,6 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/qualities/viewers/{qualityId}', [QualityController::class, 'storeViewer']);
 
     Route::get('qualitiesexport', [QualityController::class, 'export']);
+    Route::get('/work-orders', [QualityController::class, 'workorder_list']);
     //    Route::post('/send-notification', function (Request $request) {
     //     Log::info('Notifikasi diterima: ' . $request->message);
     //     return response()->json(['status' => 'success', 'data' => $request->all()]);

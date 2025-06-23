@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Quality;
 use Illuminate\Http\Request;
 use App\Models\QualityViewer;
+use App\Models\Workorder;
 use App\Exports\QualityExport;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\QualityResource;
 use Illuminate\Support\Facades\Storage;
 use App\http\Resources\QualityViewerResource;
+use App\Http\Resources\WorkOrderResource;
 
 class QualityController extends Controller
 {
@@ -21,6 +23,11 @@ class QualityController extends Controller
             'status' => true,
             'data' => $data,
         ]);
+    }
+
+    public function workorder_list()
+    {
+        return WorkOrderResource::collection(Workorder::all());
     }
 
     public function store(Request $request)
