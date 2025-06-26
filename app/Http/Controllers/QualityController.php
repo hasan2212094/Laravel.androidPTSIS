@@ -43,9 +43,10 @@ class QualityController extends Controller
         return WorkOrderResource::collection(Workorder::all());
     }
 
+   
     public function store(Request $request)
     {
-        $validationRules = [
+        $validator = $validationRules = [
             'project' => 'required',
             'no_wo' => 'required|exists:workorders,id',
             'description' => 'required',
@@ -53,15 +54,22 @@ class QualityController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             'status' => 'integer',
+        ];
+
+        $validator = Validator::make($request->all(), $validationRules);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->messages()], 422);
+        }
+
+        $validated = Arr::only($validator->validated(), [
+            'project',
+            'no_wo',
+            'description',
+            'responds',
+            'status'
         ]);
-        $quality = Quality::create([
-            'project' =>(int) $request->project,
-            'no_wo' => (int)$request->no_wo,
-            'description' => (int)$request->description,
-            'responds' => $request->responds,
-            'date' => $request->date,
-            'status' => $request->status ?? 0,
-        ]);
+        $validated['date'] = now();
 
         $quality = Quality::create($validated);
 
@@ -78,8 +86,7 @@ class QualityController extends Controller
             'message' => 'Data berhasil disimpan',
             'data' => new QualityResource($quality->load(['workorder', 'images'])),
         ], 201);
-    }
-    public function show(Quality $quality)
+    }    public function show(Quality $quality)
     {
         $quality->load(['workorder', 'images']);
 
