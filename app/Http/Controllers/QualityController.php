@@ -53,22 +53,15 @@ class QualityController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             'status' => 'integer',
-        ];
-
-        $validator = Validator::make($request->all(), $validationRules);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->messages()], 422);
-        }
-
-        $validated = Arr::only($validator->validated(), [
-            'project',
-            'no_wo',
-            'description',
-            'responds',
-            'status'
         ]);
-        $validated['date'] = now();
+        $quality = Quality::create([
+            'project' =>(int) $request->project,
+            'no_wo' => (int)$request->no_wo,
+            'description' => (int)$request->description,
+            'responds' => $request->responds,
+            'date' => $request->date,
+            'status' => $request->status ?? 0,
+        ]);
 
         $quality = Quality::create($validated);
 
