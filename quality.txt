@@ -1,0 +1,47 @@
+Perubahan database quality
+( bisa di buat semua level )
+
+- Nama Project
+- NO_ WO 
+- tanggal secara otomatis
+- keterangan temuan 
+- foto/image multi (temuan)
+- Status(Watting dan done)
+- respondes
+
+note. responds yang update dan edit hapus hanya bagian (QC,SPV,MNG)
+
+- Status (Relevan dan Not Relevan)
+- comment ( not relevan)
+- keterangan relevan 
+- Foto/image relevan 
+
+view quality 
+- tanggal 
+- NO-Wo
+- Nama Project 
+- keterangan temuan 
+- foto image 
+- status (watting dan done)
+- respond (view)
+
+note. keluar Ketika update setelah respond (QC, SPV, dan MNG)
+
+view setelah update respond not relevan
+- status (not relevan)
+- comment (not relevan)
+view setelah update respond relevan
+- keterangan sudah perbaikan (relevan)
+- foto/image relevan
+
+note. 
+untuk view tidak bisa di edit Ketika masuk view 
+
+list quality 
+- No-Wo 
+- tanggal 
+- status ( Done dan Watting)
+- status ( relevan dan Not relevan) 
+
+
+

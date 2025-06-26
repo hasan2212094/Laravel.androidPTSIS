@@ -15,9 +15,11 @@ class Quality extends Model
         'no_wo',
         'description',
         'responds',
-        'image',
         'date',
         'status',
+        'status_relevan',
+        'comment',
+        'description_relevan',
     ];
 
     protected $casts = [
@@ -35,13 +37,26 @@ class Quality extends Model
     public function getStatusLabelAttribute()
     {
         return match ($this->status) {
-            0 => 'In Progress',
+            0 => 'waiting',
             1 => 'Done',
             default => 'Unknown'
         };
     }
     public function images()
     {
-        return $this->hasMany(QualityImage::class, 'quality_id');
+        return $this->hasMany(QualityImage::class);
+    }
+    public function getStatusLabelAttributerelevan()
+    {
+        $statusLabels = [
+            0 => 'Notrelevan',
+            1 => 'Relevan',
+        ];
+
+        return $statusLabels[$this->status] ?? 'Unknown';
+    }
+    public function imagesrelevan()
+    {
+        return $this->hasMany(QualityImageRelevan::class,); // ganti jika foreign key berbeda
     }
 }

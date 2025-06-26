@@ -108,6 +108,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/qualities/viewers/{qualityId}', [QualityController::class, 'showViewer']);
     Route::post('/qualities/viewers/{qualityId}', [QualityController::class, 'storeViewer']);
+    Route::post('/qualities/updaterelevanstatus/{id}', [QualityController::class, 'updaterelevanstatus']);
+    Route::post('/qualities/updatenotrelevanstatus/{id}', [QualityController::class, 'updatenotrelevanstatus']);
 
     Route::get('qualitiesexport', [QualityController::class, 'export']);
     Route::get('/work-orders', [QualityController::class, 'workorder_list']);
