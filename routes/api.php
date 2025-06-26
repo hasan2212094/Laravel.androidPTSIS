@@ -99,7 +99,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/qualities', [QualityController::class, 'store']); // simpan baru
 
     Route::get('/qualities/{quality}', [QualityController::class, 'show']);     // detail
-    Route::post('/qualities/update/{quality}', [QualityController::class, 'update']);    // update
+    Route::post('qualities/{quality}', [QualityController::class, 'update']);    // update
 
     Route::get('/qualitiesdelete', [QualityController::class, 'indexdelete']); // ambil semua
     Route::delete('/qualities/{quality}', [QualityController::class, 'destroy']); // hapus sementara
@@ -108,6 +108,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/qualities/viewers/{qualityId}', [QualityController::class, 'showViewer']);
     Route::post('/qualities/viewers/{qualityId}', [QualityController::class, 'storeViewer']);
+
     Route::post('/qualities/updaterelevanstatus/{id}', [QualityController::class, 'updaterelevanstatus']);
     Route::post('/qualities/updatenotrelevanstatus/{id}', [QualityController::class, 'updatenotrelevanstatus']);
 

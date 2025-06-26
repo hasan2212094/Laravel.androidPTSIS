@@ -43,7 +43,7 @@ class QualityController extends Controller
         return WorkOrderResource::collection(Workorder::all());
     }
 
-   
+
     public function store(Request $request)
     {
         $validator = $validationRules = [
@@ -86,7 +86,8 @@ class QualityController extends Controller
             'message' => 'Data berhasil disimpan',
             'data' => new QualityResource($quality->load(['workorder', 'images'])),
         ], 201);
-    }    public function show(Quality $quality)
+    }
+    public function show(Quality $quality)
     {
         $quality->load(['workorder', 'images']);
 
@@ -98,39 +99,52 @@ class QualityController extends Controller
 
     public function update(Request $request, Quality $quality)
     {
-        $request->validate([
-            'project' => 'required',
-            'no_wo' => 'required|exists:workorders,id',
-            'description' => 'required',
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
-            'status' => 'integer',
-        ]);
+        try {
+            $validated = $request->validate([
+                'project' => 'required|string|max:255',
+                'no_wo' => 'required|exists:workorders,id',
+                'description' => 'required|string',
+                'responds' => 'sometimes|boolean',
+                'images' => 'nullable|array',
+                'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+                'status' => 'integer|in:0,1',
+                'date' => 'nullable|date',
+            ]);
 
-        $data = $request->only(['project', 'no_wo', 'description', 'date', 'status']);
-        if ($request->hasFile('images')) {
-            // Hapus semua gambar lama kalau perlu
-            foreach ($quality->images as $img) {
-                Storage::disk('public')->delete($img->image_path);
-                $img->delete();
-            }
+            // Tambahkan status_relevan = 0 secara otomatis
+            $validated['date'] = now(); // otomatis isi tanggal saat update
 
-            foreach ($request->file('images') as $image) {
-                if ($image->isValid()) {
-                    $path = $image->store('quality_images', 'public');
-                    $quality->images()->create(['image_path' => $path]);
+            // Update data
+            $quality->update($validated);
+
+            // Handle gambar jika ada
+            if ($request->hasFile('images')) {
+                // Hapus gambar lama
+                foreach ($quality->images as $img) {
+                    Storage::disk('public')->delete($img->image_path);
+                    $img->delete();
+                }
+
+                // Simpan gambar baru
+                foreach ($request->file('images') as $image) {
+                    if ($image->isValid()) {
+                        $path = $image->store('quality_images', 'public');
+                        $quality->images()->create(['image_path' => $path]);
+                    }
                 }
             }
+
+            return response()->json([
+                'message' => 'Data berhasil diperbarui',
+                'data' => new QualityResource($quality->load('images'))
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Data gagal diperbarui',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $quality->update($data);
-
-        return response()->json([
-            'message' => 'Data berhasil diperbarui',
-            'data' => new QualityResource($quality)
-        ]);
     }
-
     public function updaterelevanstatus(Request $request, string $id)
     {
         try {
