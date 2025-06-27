@@ -47,6 +47,10 @@ class QualityController extends Controller
     public function store(Request $request)
     {
         $validator = $validationRules = [
+            'user_id_by' => 'required|exists:users,id',
+            'role_by' => 'required|exists:roles,id',
+            'user_id_to' => 'required|exists:users,id',
+            'role_to' => 'required|exists:roles,id',
             'project' => 'required',
             'no_wo' => 'required|exists:workorders,id',
             'description' => 'required',
@@ -55,14 +59,16 @@ class QualityController extends Controller
             'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             'status' => 'integer',
         ];
-
-        $validator = Validator::make($request->all(), $validationRules);
+         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $validationRules);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->messages()], 422);
         }
-
         $validated = Arr::only($validator->validated(), [
+            'user_id_by',
+            'role_by',
+            'user_id_to',
+            'role_to',
             'project',
             'no_wo',
             'description',
@@ -101,6 +107,10 @@ class QualityController extends Controller
     {
         try {
             $validated = $request->validate([
+                'user_id_by' => 'required|exists:users,id',
+                'role_by' => 'required|exists:roles,id',
+                'user_id_to' => 'required|exists:users,id',
+                'role_to' => 'required|exists:roles,id',
                 'project' => 'required|string|max:255',
                 'no_wo' => 'required|exists:workorders,id',
                 'description' => 'required|string',

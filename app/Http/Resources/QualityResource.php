@@ -17,6 +17,14 @@ class QualityResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'user_id_by' => $this->user_id_by,
+            'user_id_to' => $this->user_id_to,
+            'role_by' => $this->role_by,
+            'role_to' => $this->role_to,
+            'user_by_name' => $this->userBy ? $this->userBy->name : null,
+            'user_to_name'=>$this->userTo ? $this->userTo->name : null,
+            'role_by_name' => $this->roleBy ? $this->roleBy->name : null,
+            'role_to_name'=>$this->roleTo ? $this->roleTo->name : null,
             'project' => $this->project,
             'no_wo' => optional($this->workorder)->nomor, // Pastikan field ini benar
             'description' => $this->description,

@@ -11,6 +11,10 @@ class Quality extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'user_id_by',
+        'user_id_to',
+        'role_by',
+        'role_to',
         'project',
         'no_wo',
         'description',
@@ -26,10 +30,8 @@ class Quality extends Model
         'responds' => 'boolean',
         'date' => 'date',
     ];
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    protected $dates = ['deleted_at', 'date', 'date_end'];
+    public $timestamps = true; // Tambahkan baris ini
     public function workorder()
     {
         return $this->belongsTo(Workorder::class, 'no_wo');
@@ -58,5 +60,32 @@ class Quality extends Model
     public function imagesrelevan()
     {
         return $this->hasMany(QualityImageRelevan::class,); // ganti jika foreign key berbeda
+    }
+       public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function userBy()
+    {
+        return $this->belongsTo(User::class, 'user_id_by');
+    }
+
+    public function userTo()
+    {
+        return $this->belongsTo(User::class, 'user_id_to');
+    }
+     public function roleBy()
+    {
+        return $this->belongsTo(Role::class, 'role_by');
+    }
+
+    public function roleTo()
+    {
+        return $this->belongsTo(Role::class, 'role_to');
     }
 }
