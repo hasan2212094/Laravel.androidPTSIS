@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class QualityResource extends JsonResource
@@ -22,9 +23,9 @@ class QualityResource extends JsonResource
             'role_by' => $this->role_by,
             'role_to' => $this->role_to,
             'user_by_name' => $this->userBy ? $this->userBy->name : null,
-            'user_to_name'=>$this->userTo ? $this->userTo->name : null,
+            'user_to_name' => $this->userTo ? $this->userTo->name : null,
             'role_by_name' => $this->roleBy ? $this->roleBy->name : null,
-            'role_to_name'=>$this->roleTo ? $this->roleTo->name : null,
+            'role_to_name' => $this->roleTo ? $this->roleTo->name : null,
             'project' => $this->project,
             'no_wo' => optional($this->workorder)->nomor, // Pastikan field ini benar
             'description' => $this->description,
@@ -33,7 +34,7 @@ class QualityResource extends JsonResource
                 ->map(fn($img) => asset('storage/' . $img->image_path))
                 ->values()
                 ->all(),
-            'date' => $this->date,
+            'date' => $this->date ? Carbon::parse($this->date_start)->format('Y-m-d H:i:s') : null,
             'status' => $this->status,
             'status_relevan' => $this->status_relevan,
             'comment' => $this->comment,
@@ -42,7 +43,7 @@ class QualityResource extends JsonResource
                 ->map(fn($img) => asset('storage/' . $img->image_path_relevan))
                 ->values()
                 ->all(),
-            'date_end' => $this->date_end,
+            'date_end' => $this->date_end ? Carbon::parse($this->date_end)->format('Y-m-d H:i:s') : null,
             'created_at' => optional($this->created_at)->toDateTimeString(),
             'updated_at' => optional($this->updated_at)->toDateTimeString(),
             'deleted_at' => optional($this->deleted_at)->toDateTimeString(),
