@@ -30,7 +30,8 @@ class QualityResource extends JsonResource
             'description' => $this->description,
             'responds' => $this->responds,
             'image_urls' => collect($this->images)
-                ->map(fn($img) => asset('storage/' . $img->image_path))
+                //->map(fn($img) => asset('storage/' . $img->image_path))
+                ->map(fn($img) => $img->image_path)
                 ->values()
                 ->all(),
             'date' => $this->date,
