@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\WorkOrderResource;
 use Illuminate\Support\Facades\Validator;
 use App\http\Resources\QualityViewerResource;
+use Illuminate\Validation\ValidationException;
 
 class QualityController extends Controller
 {
@@ -59,7 +60,7 @@ class QualityController extends Controller
             'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             'status' => 'integer',
         ];
-         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $validationRules);
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $validationRules);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->messages()], 422);
@@ -103,54 +104,90 @@ class QualityController extends Controller
         ]);
     }
 
-    public function update(Request $request, Quality $quality)
+    public function update(Request $request,  string $id)
     {
+        // try {
+        //     $validated = $request->validate([
+        //         'user_id_by' => 'required|exists:users,id',
+        //         'role_by' => 'required|exists:roles,id',
+        //         'user_id_to' => 'required|exists:users,id',
+        //         'role_to' => 'required|exists:roles,id',
+        //         'project' => 'required|string|max:255',
+        //         'no_wo' => 'required|exists:workorders,id',
+        //         'description' => 'required|string',
+        //         // 'responds' => 'sometimes|boolean',
+        //         // 'images' => 'nullable|array',
+        //         // 'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+        //         // 'status' => 'integer|in:0,1',
+        //         'date' => 'nullable|date',
+        //     ]);
+
+        //     // Tambahkan status_relevan = 0 secara otomatis
+        //     $validated['date'] = now(); // otomatis isi tanggal saat update
+
+        //     // Update data
+        //     $quality->update($validated);
+
+        //     // Handle gambar jika ada
+        //     // if ($request->hasFile('images')) {
+        //     //     // Hapus gambar lama
+        //     //     foreach ($quality->images as $img) {
+        //     //         Storage::disk('public')->delete($img->image_path);
+        //     //         $img->delete();
+        //     //     }
+
+        //     //     // Simpan gambar baru
+        //     //     foreach ($request->file('images') as $image) {
+        //     //         if ($image->isValid()) {
+        //     //             $path = $image->store('quality_images', 'public');
+        //     //             $quality->images()->create(['image_path' => $path]);
+        //     //         }
+        //     //     }
+        //     // }
+
+        //     return response()->json([
+        //         'message' => 'Data berhasil diperbarui',
+        //         'data' => new QualityResource($quality->load('images'))
+        //     ]);
+        // } catch (\Exception $e) {
+        //     return response()->json([
+        //         'message' => 'Data gagal diperbarui',
+        //         'error' => $e->getMessage()
+        //     ], 500);
+        // }
         try {
+            // Cari assignment berdasarkan ID
+            $quality = Quality::findOrFail($id);
+
+            // Validasi input
             $validated = $request->validate([
-                'user_id_by' => 'required|exists:users,id',
-                'role_by' => 'required|exists:roles,id',
-                'user_id_to' => 'required|exists:users,id',
-                'role_to' => 'required|exists:roles,id',
+                'user_id_by' => 'sometimes|exists:users,id',
+                'role_by' => 'sometimes|exists:roles,id',
+                'user_id_to' => 'sometimes|exists:users,id',
+                'role_to' => 'sometimes|exists:roles,id',
                 'project' => 'required|string|max:255',
                 'no_wo' => 'required|exists:workorders,id',
                 'description' => 'required|string',
-                'responds' => 'sometimes|boolean',
-                'images' => 'nullable|array',
-                'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
-                'status' => 'integer|in:0,1',
-                'date' => 'nullable|date',
             ]);
 
-            // Tambahkan status_relevan = 0 secara otomatis
-            $validated['date'] = now(); // otomatis isi tanggal saat update
+            $validated['date'] = now();
 
-            // Update data
+            $quality->update($validated);
+            // Update assignment dengan data yang sudah divalidasi
             $quality->update($validated);
 
-            // Handle gambar jika ada
-            if ($request->hasFile('images')) {
-                // Hapus gambar lama
-                foreach ($quality->images as $img) {
-                    Storage::disk('public')->delete($img->image_path);
-                    $img->delete();
-                }
-
-                // Simpan gambar baru
-                foreach ($request->file('images') as $image) {
-                    if ($image->isValid()) {
-                        $path = $image->store('quality_images', 'public');
-                        $quality->images()->create(['image_path' => $path]);
-                    }
-                }
-            }
-
             return response()->json([
-                'message' => 'Data berhasil diperbarui',
-                'data' => new QualityResource($quality->load('images'))
-            ]);
+                'message' => 'Quality updated successfully',
+                'data' => $quality
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Data gagal diperbarui',
+                'message' => 'Internal server error',
                 'error' => $e->getMessage()
             ], 500);
         }
