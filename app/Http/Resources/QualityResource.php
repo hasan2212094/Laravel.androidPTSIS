@@ -23,6 +23,7 @@ class QualityResource extends JsonResource
             'user_by_name' => $this->userBy ? $this->userBy->name : null,
             'user_to_name' => $this->userTo ? $this->userTo->name : null,
             'project' => $this->project,
+            'work_order_id' => optional($this->workorder)->id,
             'no_wo' => optional($this->workorder)->nomor, // Pastikan field ini benar
             'description' => $this->description,
             'responds' => $this->responds,
