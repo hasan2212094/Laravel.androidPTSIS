@@ -13,8 +13,6 @@ class Quality extends Model
     protected $fillable = [
         'user_id_by',
         'user_id_to',
-        'role_by',
-        'role_to',
         'project',
         'no_wo',
         'description',
@@ -65,11 +63,6 @@ class Quality extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
-    }
-
     public function userBy()
     {
         return $this->belongsTo(User::class, 'user_id_by');
@@ -79,13 +72,5 @@ class Quality extends Model
     {
         return $this->belongsTo(User::class, 'user_id_to');
     }
-     public function roleBy()
-    {
-        return $this->belongsTo(Role::class, 'role_by');
-    }
-
-    public function roleTo()
-    {
-        return $this->belongsTo(Role::class, 'role_to');
-    }
+    
 }

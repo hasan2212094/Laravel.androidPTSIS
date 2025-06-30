@@ -49,9 +49,7 @@ class QualityController extends Controller
     {
         $validator = $validationRules = [
             'user_id_by' => 'required|exists:users,id',
-            'role_by' => 'required|exists:roles,id',
             'user_id_to' => 'required|exists:users,id',
-            'role_to' => 'required|exists:roles,id',
             'project' => 'required',
             'no_wo' => 'required|exists:workorders,id',
             'description' => 'required',
@@ -67,9 +65,7 @@ class QualityController extends Controller
         }
         $validated = Arr::only($validator->validated(), [
             'user_id_by',
-            'role_by',
             'user_id_to',
-            'role_to',
             'project',
             'no_wo',
             'description',
@@ -162,9 +158,7 @@ class QualityController extends Controller
             // Validasi input
             $validated = $request->validate([
                 'user_id_by' => 'sometimes|exists:users,id',
-                'role_by' => 'sometimes|exists:roles,id',
                 'user_id_to' => 'sometimes|exists:users,id',
-                'role_to' => 'sometimes|exists:roles,id',
                 'project' => 'required|string|max:255',
                 'no_wo' => 'required|exists:workorders,id',
                 'description' => 'required|string',
@@ -178,7 +172,7 @@ class QualityController extends Controller
 
             return response()->json([
                 'message' => 'Quality updated successfully',
-                'data' => $quality
+                'data' => new QualityResource($quality->load(['workorder']))
             ], 200);
         } catch (ValidationException $e) {
             return response()->json([
@@ -192,7 +186,7 @@ class QualityController extends Controller
             ], 500);
         }
     }
-    public function updaterelevanstatus(Request $request, string $id)
+    public function updatenotrelevanstatus(Request $request, string $id)
     {
         try {
             $quality = Quality::find($id);
@@ -248,7 +242,7 @@ class QualityController extends Controller
             ], 500);
         }
     }
-    public function updatenotrelevanstatus(Request $request, string $id)
+    public function updaterelevanstatus(Request $request, string $id)
     {
         try {
             $quality = Quality::find($id);
