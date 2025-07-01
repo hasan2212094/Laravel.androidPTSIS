@@ -197,7 +197,7 @@ class QualityController extends Controller
             $validated = $request->validate([
                 'status' => 'required|integer|in:0,1',
                 'status_relevan' => 'sometimes|integer',
-                'comment' => 'sometimes|required|string|max:255',
+                'comment' => 'nullable|string|max:255',
                 // 'imagesrelevan' => 'nullable|array',
                 // 'imagesrelevan.*' => 'image|mimes:jpg,jpeg,png|max:2048',
                 // 'description_relevan' => 'sometimes|required|string|max:255',
@@ -214,8 +214,13 @@ class QualityController extends Controller
             //     }
             // }
 
-            if (isset($validated['comment'])) {
+            if (array_key_exists('comment', $validated)) {
                 $quality->comment = $validated['comment'];
+            }
+
+            // Update status_relevan jika dikirim
+            if (array_key_exists('status_relevan', $validated)) {
+                $quality->status_relevan = $validated['status_relevan'];
             }
 
             // if (isset($validated['description_relevan'])) {
@@ -225,11 +230,7 @@ class QualityController extends Controller
             if ($validated['status'] == 1 && !$quality->date_end) {
                 $quality->date_end = now();
             }
-
-            if ($request->has('status')) {
-                $quality->status = (int) $request->input('status');
-            }
-
+            
             $quality->status = $validated['status'];
             $quality->updated_at = now();
             $quality->save();
