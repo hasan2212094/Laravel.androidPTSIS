@@ -38,7 +38,8 @@ class QualityResource extends JsonResource
             'comment' => $this->comment,
             'description_relevan' => $this->description_relevan,
             'image_relevan_urls' => collect($this->imagesrelevan)
-                ->map(fn($img) => asset('storage/' . $img->image_path_relevan))
+                //->map(fn($img) => asset('storage/' . $img->image_path_relevan))
+                ->map(fn($img) => $img->image_path_relevan)
                 ->values()
                 ->all(),
             'date_end' => $this->date_end ? Carbon::parse($this->date_end)->format('Y-m-d H:i:s') : null,
