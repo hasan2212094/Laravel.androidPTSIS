@@ -10,9 +10,31 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class QualityExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize
 {
+    protected $filters;
+
+    public function __construct($filters = [])
+    {
+        $this->filters = $filters; // terima filter dari controller
+    }
+
     public function collection()
     {
-        return Quality::with('user')->get();
+        $query = Quality::with('user');
+
+        // Filter status
+        if (!empty($this->filters['status'])) {
+            $query->where('status', $this->filters['status']);
+        }
+
+        // Filter tanggal
+        if (!empty($this->filters['start_date']) && !empty($this->filters['end_date'])) {
+            $query->whereBetween('date', [
+                $this->filters['start_date'],
+                $this->filters['end_date'],
+            ]);
+        }
+
+        return $query->get();
     }
 
     public function headings(): array
@@ -23,7 +45,12 @@ class QualityExport implements FromCollection, WithHeadings, WithMapping, Should
             'No WO',
             'Description',
             'Responds',
-            'Tanggal',
+            'Status',
+            'Status Relevan',
+            'Description Relevan',
+            'Comment',
+            'Date End',
+            'Date',
             'User',
         ];
     }
@@ -36,9 +63,14 @@ class QualityExport implements FromCollection, WithHeadings, WithMapping, Should
             $quality->no_wo,
             $quality->description,
             $quality->responds ? 'Ya' : 'Tidak',
-            $quality->date ? $quality->date->format('Y-m-d') : '',
+            $quality->status,
+            $quality->status_relevan,
+            $quality->description_relevan,
+            $quality->comment,
+            // Pastikan aman jika date_end atau date string/null
+            $quality->date_end ? \Carbon\Carbon::parse($quality->date_end)->format('Y-m-d') : '-',
+            $quality->date ? \Carbon\Carbon::parse($quality->date)->format('Y-m-d') : '-',
             optional($quality->user)->name ?? '-',
         ];
     }
 }
-

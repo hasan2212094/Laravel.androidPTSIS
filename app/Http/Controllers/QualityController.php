@@ -387,8 +387,42 @@ class QualityController extends Controller
             'data' => new QualityViewerResource($viewer)
         ], 201);
     }
-    public function exportSummary()
+    public function exportSummary(Request $request)
     {
-        return Excel::download(new QualityExport, 'qualities.xlsx');
+        try {
+            // Validasi input filter (opsional)
+            $request->validate([
+                'status' => 'nullable|string',
+                'start_date' => 'nullable|date',
+                'end_date' => 'nullable|date|after_or_equal:start_date',
+            ]);
+
+            $filters = [
+                'status' => $request->input('status'),
+                'start_date' => $request->input('start_date'),
+                'end_date' => $request->input('end_date'),
+            ];
+
+            // Generate file name
+            $fileName = 'quality_export_' . now()->format('Ymd_His') . '.xlsx';
+
+            // Jalankan export Excel
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\QualityExport($filters),
+                $fileName
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Return kalau validasi gagal
+            return response()->json([
+                'message' => 'Validasi gagal!',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            // Return kalau ada error lain
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat export!',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
