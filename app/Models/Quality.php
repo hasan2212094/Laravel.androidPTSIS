@@ -59,7 +59,7 @@ class Quality extends Model
     {
         return $this->hasMany(QualityImageRelevan::class,); // ganti jika foreign key berbeda
     }
-       public function user()
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
@@ -72,5 +72,4 @@ class Quality extends Model
     {
         return $this->belongsTo(User::class, 'user_id_to');
     }
-    
 }

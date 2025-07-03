@@ -49,7 +49,6 @@ class QualityController extends Controller
     {
         $validator = $validationRules = [
             'user_id_by' => 'required|exists:users,id',
-            'user_id_to' => 'required|exists:users,id',
             'project' => 'required',
             'no_wo' => 'required|exists:workorders,id',
             'description' => 'required',
@@ -65,7 +64,6 @@ class QualityController extends Controller
         }
         $validated = Arr::only($validator->validated(), [
             'user_id_by',
-            'user_id_to',
             'project',
             'no_wo',
             'description',
@@ -158,7 +156,6 @@ class QualityController extends Controller
             // Validasi input
             $validated = $request->validate([
                 'user_id_by' => 'sometimes|exists:users,id',
-                'user_id_to' => 'sometimes|exists:users,id',
                 'project' => 'required|string|max:255',
                 'no_wo' => 'required|exists:workorders,id',
                 'description' => 'required|string',
@@ -195,6 +192,7 @@ class QualityController extends Controller
             }
 
             $validated = $request->validate([
+                'user_id_to' => 'sometimes|exists:users,id',
                 'status' => 'required|integer|in:0,1',
                 'status_relevan' => 'sometimes|integer',
                 'comment' => 'nullable|string|max:255',
@@ -230,7 +228,12 @@ class QualityController extends Controller
             if ($validated['status'] == 1 && !$quality->date_end) {
                 $quality->date_end = now();
             }
-            
+            if (array_key_exists('user_id_to', $validated)) {
+                $quality->user_id_to = $validated['user_id_to'];
+            }
+
+
+
             $quality->status = $validated['status'];
             $quality->updated_at = now();
             $quality->save();
@@ -252,6 +255,7 @@ class QualityController extends Controller
             }
 
             $validated = $request->validate([
+                'user_id_to' => 'sometimes|exists:users,id',
                 'status' => 'required|integer|in:0,1',
                 'status_relevan' => 'sometimes|integer|in:0,1',
                 // 'comment' => 'sometimes|required|string|max:255',
@@ -289,6 +293,10 @@ class QualityController extends Controller
             if (isset($validated['status_relevan'])) {
                 $quality->status_relevan = $validated['status_relevan'];
             }
+            if (array_key_exists('user_id_to', $validated)) {
+                $quality->user_id_to = $validated['user_id_to'];
+            }
+
 
             $quality->updated_at = now();
             $quality->save();

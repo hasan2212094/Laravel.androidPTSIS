@@ -21,8 +21,5 @@ class Role extends Model
     {
         return $this->hasMany(Assignment::class);
     }
-    public function quality()
-    {
-        return $this->hasMany(Quality::class);
-    }
+    
 }

@@ -12,9 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('qualities', function (Blueprint $table) {
-            $table->dropForeign(['role_by']);
-            $table->dropForeign(['role_to']);
-            $table->dropColumn(['role_by', 'role_to']);
+            $table->dropColumn(['role_id', 'role_by']);
         });
     }
 
@@ -24,11 +22,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('qualities', function (Blueprint $table) {
-            $table->unsignedBigInteger('role_by')->nullable();
-            $table->unsignedBigInteger('role_to')->nullable();
-
-            $table->foreign('role_by')->references('id')->on('roles')->onDelete('set null');
-            $table->foreign('role_to')->references('id')->on('roles')->onDelete('set null');
+            $table->unsignedBigInteger('role_id')->nullable();
+            $table->string('role_by')->nullable();
         });
     }
 };

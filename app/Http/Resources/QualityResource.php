@@ -19,9 +19,7 @@ class QualityResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id_by' => $this->user_id_by,
-            'user_id_to' => $this->user_id_to,
             'user_by_name' => $this->userBy ? $this->userBy->name : null,
-            'user_to_name' => $this->userTo ? $this->userTo->name : null,
             'project' => $this->project,
             'work_order_id' => optional($this->workorder)->id,
             'no_wo' => optional($this->workorder)->nomor, // Pastikan field ini benar
@@ -33,6 +31,8 @@ class QualityResource extends JsonResource
                 ->values()
                 ->all(),
             'date' => $this->date ? Carbon::parse($this->date_start)->format('Y-m-d H:i:s') : null,
+            'user_id_to' => $this->user_id_to,
+            'user_to_name' => $this->userTo ? $this->userTo->name : null,
             'status' => $this->status,
             'status_relevan' => $this->status_relevan,
             'comment' => $this->comment,
