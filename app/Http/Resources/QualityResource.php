@@ -17,31 +17,36 @@ class QualityResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'user_id_by' => $this->user_id_by,
-            'user_by_name' => $this->userBy ? $this->userBy->name : null,
-            'project' => $this->project,
-            'work_order_id' => optional($this->workorder)->id,
-            'no_wo' => optional($this->workorder)->nomor, // Pastikan field ini benar
-            'description' => $this->description,
-            'responds' => $this->responds,
+            'id' => (int) $this->id,
+            'user_id_by' => $this->user_id_by !== null ? (int) $this->user_id_by : null,
+            'user_by_name' => optional($this->userBy)->name,
+            'project' => $this->project ?? '',
+
+            'work_order_id' => optional($this->workorder)->id !== null ? (int) $this->workorder->id : null,
+            'no_wo' => optional($this->workorder)->nomor ?? null,
+
+            'description' => $this->description ?? '',
+            'responds' => (bool) $this->responds,
+
             'image_urls' => collect($this->images)
-                //->map(fn($img) => asset('storage/' . $img->image_path))
                 ->map(fn($img) => $img->image_path)
                 ->values()
                 ->all(),
-            'date' => $this->date ? Carbon::parse($this->date_start)->format('Y-m-d H:i:s') : null,
-            'user_id_to' => $this->user_id_to,
-            'user_to_name' => $this->userTo ? $this->userTo->name : null,
-            'status' => $this->status,
-            'status_relevan' => $this->status_relevan,
-            'comment' => $this->comment,
-            'description_relevan' => $this->description_relevan,
+
+            'date' => $this->date ? Carbon::parse($this->date)->format('Y-m-d H:i:s') : null,
+            'user_id_to' => $this->user_id_to !== null ? (int) $this->user_id_to : null,
+            'user_to_name' => optional($this->userTo)->name,
+
+            'status' => $this->status !== null ? (int) $this->status : null,
+            'status_relevan' => $this->status_relevan !== null ? (int) $this->status_relevan : null,
+            'comment' => $this->comment ?? null,
+            'description_relevan' => $this->description_relevan ?? null,
+
             'image_relevan_urls' => collect($this->imagesrelevan)
-                //->map(fn($img) => asset('storage/' . $img->image_path_relevan))
                 ->map(fn($img) => $img->image_path_relevan)
                 ->values()
                 ->all(),
+
             'date_end' => $this->date_end ? Carbon::parse($this->date_end)->format('Y-m-d H:i:s') : null,
             'created_at' => optional($this->created_at)->toDateTimeString(),
             'updated_at' => optional($this->updated_at)->toDateTimeString(),
