@@ -54,7 +54,7 @@ class QualityController extends Controller
             'description' => 'required',
             'responds' => 'required|boolean',
             'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:20240',
             'status' => 'integer',
         ];
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $validationRules);
@@ -260,7 +260,7 @@ class QualityController extends Controller
                 'status_relevan' => 'sometimes|integer|in:0,1',
                 // 'comment' => 'sometimes|required|string|max:255',
                 'imagesrelevan' => 'nullable|array',
-                'imagesrelevan.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+                'imagesrelevan.*' => 'image|mimes:jpg,jpeg,png|max:20240',
                 'description_relevan' => 'sometimes|required|string|max:255',
             ]);
 
