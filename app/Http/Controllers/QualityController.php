@@ -14,7 +14,7 @@ use App\Http\Resources\QualityResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\WorkOrderResource;
 use Illuminate\Support\Facades\Validator;
-use App\http\Resources\QualityViewerResource;
+use App\Http\Resources\QualityViewerResource;
 use Illuminate\Validation\ValidationException;
 
 class QualityController extends Controller
@@ -358,35 +358,95 @@ class QualityController extends Controller
         ], 200);
     }
 
+    // public function storeViewer(Request $request, $qualityId)
+    // {
+    //     // Validasi user_id
+    //     $request->validate([
+    //         'user_id' => 'required|exists:users,id',
+    //     ]);
+
+    //     // Pastikan Quality dengan ID ini ada
+    //     $quality = Quality::find($qualityId);
+    //     if (!$quality) {
+    //         return response()->json([
+    //             'message' => 'Quality not found'
+    //         ], 404);
+    //     }
+
+    //     // Cek apakah viewer sudah ada
+    //     $existingViewer = QualityViewer::where('quality_id', $qualityId)
+    //         ->where('user_id', $request->user_id)
+    //         ->first();
+
+    //     if ($existingViewer) {
+    //         return response()->json([
+    //             'message' => 'Viewer already exists',
+    //             'data' => new QualityViewerResource($existingViewer)
+    //         ], 200); // ubah ke 200 karena data sudah ada
+    //     }
+
+    //     // Update responds = true di Quality
+    //     $quality->update(['responds' => true]);
+
+    //     // Buat viewer baru
+    //     $viewer = QualityViewer::create([
+    //         'quality_id' => $qualityId,
+    //         'user_id' => $request->user_id,
+    //     ]);
+
+    //     // Load relasi user untuk resource
+    //     $viewer->load('user');
+
+    //     return response()->json([
+    //         'message' => 'Data viewer berhasil disimpan',
+    //         'data' => new QualityViewerResource($viewer)
+    //     ], 201);
+    // }
     public function storeViewer(Request $request, $qualityId)
     {
+        // Validasi user_id
         $request->validate([
             'user_id' => 'required|exists:users,id',
         ]);
 
+        // Cek apakah Quality dengan ID ini ada
+        $quality = Quality::find($qualityId);
+        if (!$quality) {
+            return response()->json([
+                'message' => 'Quality not found, no viewer added'
+            ], 200); // return 200 bukan 404
+        }
+
+        // Cek apakah viewer sudah ada
         $existingViewer = QualityViewer::where('quality_id', $qualityId)
             ->where('user_id', $request->user_id)
             ->first();
 
         if ($existingViewer) {
             return response()->json([
+                'message' => 'Viewer already exists',
                 'data' => new QualityViewerResource($existingViewer)
-            ], 201);
+            ], 200);
         }
 
+        // Update responds = true di Quality
+        $quality->update(['responds' => true]);
 
-        Quality::where('id', $qualityId)->update(['responds' => true]);
-
+        // Buat viewer baru
         $viewer = QualityViewer::create([
             'quality_id' => $qualityId,
             'user_id' => $request->user_id,
         ]);
+
+        // Load relasi user untuk resource
+        $viewer->load('user');
 
         return response()->json([
             'message' => 'Data viewer berhasil disimpan',
             'data' => new QualityViewerResource($viewer)
         ], 201);
     }
+
     public function exportSummary(Request $request)
     {
         try {
