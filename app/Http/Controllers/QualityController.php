@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Quality;
 use App\Models\Workorder;
 use Illuminate\Support\Arr;
@@ -70,7 +71,14 @@ class QualityController extends Controller
             'responds',
             'status'
         ]);
-        $validated['date'] = now();
+        if ($request->filled('date')) {
+            // Jika request mengirim field `date`, paksa ada jam
+            $validated['date'] = Carbon::parse($request->date)
+                ->setTimeFromTimeString(now()->format('H:i:s'));
+        } else {
+            // Jika tidak ada, set ke jam saat ini
+            $validated['date'] = now();
+        }
 
         $quality = Quality::create($validated);
 
@@ -161,7 +169,12 @@ class QualityController extends Controller
                 'description' => 'required|string',
             ]);
 
-            $validated['date'] = now();
+            if ($request->filled('date')) {
+                $validated['date'] = Carbon::parse($request->date)
+                    ->setTimeFromTimeString(now()->format('H:i:s'));
+            } else {
+                $validated['date'] = $quality->date ?? now();
+            }
 
             $quality->update($validated);
             // Update assignment dengan data yang sudah divalidasi

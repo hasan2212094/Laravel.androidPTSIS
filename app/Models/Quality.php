@@ -26,7 +26,7 @@ class Quality extends Model
 
     protected $casts = [
         'responds' => 'boolean',
-        'date' => 'date',
+        'date' => 'datetime',
     ];
     protected $dates = ['deleted_at', 'date', 'date_end'];
     public $timestamps = true; // Tambahkan baris ini

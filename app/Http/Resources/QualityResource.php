@@ -33,7 +33,7 @@ class QualityResource extends JsonResource
                 ->values()
                 ->all(),
 
-            'date' => $this->date ? Carbon::parse($this->date)->format('Y-m-d H:i:s') : null,
+           'date' => $this->date ? $this->date->format('Y-m-d H:i:s') : null,
             'user_id_to' => $this->user_id_to !== null ? (int) $this->user_id_to : null,
             'user_to_name' => optional($this->userTo)->name,
 
