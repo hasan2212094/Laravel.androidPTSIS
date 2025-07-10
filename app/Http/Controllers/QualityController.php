@@ -206,7 +206,7 @@ class QualityController extends Controller
 
             $validated = $request->validate([
                 'user_id_to' => 'sometimes|exists:users,id',
-                'status' => 'required|integer|in:0,1',
+                // 'status' => 'required|integer|in:0,1',
                 'status_relevan' => 'sometimes|integer',
                 'comment' => 'nullable|string|max:255',
                 // 'imagesrelevan' => 'nullable|array',
@@ -238,17 +238,17 @@ class QualityController extends Controller
             //     $quality->description_relevan = $validated['description_relevan'];
             // }
 
-            if ($validated['status'] == 1 && !$quality->date_end) {
-                $quality->date_end = now();
-            }
+            // if ($validated['status'] == 1 && !$quality->date_end) {
+            //     $quality->date_end = now();
+            // }
             if (array_key_exists('user_id_to', $validated)) {
                 $quality->user_id_to = $validated['user_id_to'];
             }
 
 
 
-            $quality->status = $validated['status'];
-            $quality->updated_at = now();
+            // $quality->status = $validated['status'];
+            // $quality->updated_at = now();
             $quality->save();
 
             return response()->json(['message' => 'Quality updated successfully', 'data' => new QualityResource($quality),], 200);
@@ -269,7 +269,7 @@ class QualityController extends Controller
 
             $validated = $request->validate([
                 'user_id_to' => 'sometimes|exists:users,id',
-                'status' => 'required|integer|in:0,1',
+                // 'status' => 'required|integer|in:0,1',
                 'status_relevan' => 'sometimes|integer|in:0,1',
                 // 'comment' => 'sometimes|required|string|max:255',
                 'imagesrelevan' => 'nullable|array',
@@ -296,13 +296,13 @@ class QualityController extends Controller
                 $quality->description_relevan = $validated['description_relevan'];
             }
 
-            if ($request->status == 1 && !$quality->date_end) {
-                $quality->date_end = now();
-            }
+            // if ($request->status == 1 && !$quality->date_end) {
+            //     $quality->date_end = now();
+            // }
 
-            if (isset($validated['status'])) {
-                $quality->status = $validated['status'];
-            }
+            // if (isset($validated['status'])) {
+            //     $quality->status = $validated['status'];
+            // }
             if (isset($validated['status_relevan'])) {
                 $quality->status_relevan = $validated['status_relevan'];
             }
@@ -311,6 +311,92 @@ class QualityController extends Controller
             }
 
 
+            // $quality->updated_at = now();
+            $quality->save();
+
+            return response()->json(['message' => 'Quality updated successfully', 'data' => new QualityResource($quality),], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error updating quality',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function updatedone(Request $request, string $id)
+    {
+        try {
+            $quality = Quality::find($id);
+            if (!$quality) {
+                return response()->json(['message' => 'Quality not found'], 404);
+            }
+
+            $validated = $request->validate([
+                'status' => 'required|integer|in:0,1,2',
+                'comment_done' => 'nullable|string|max:255',
+            ]);
+            if (array_key_exists('comment_done', $validated)) {
+                $quality->comment_done = $validated['comment_done'];
+            }
+
+            if ($validated['status'] == 2 && !$quality->date_end) {
+                $quality->date_end = now();
+            }
+
+
+
+            $quality->status = $validated['status'];
+            $quality->updated_at = now();
+            $quality->save();
+
+            $quality->load(['workorder', 'images', 'imagesrelevan', 'imagesprogress', 'userBy', 'userTo']);
+
+            return response()->json(['message' => 'Quality updated successfully', 'data' => new QualityResource($quality),], 200);
+        } catch (\Exception $e) {
+             Log::error('Error in updatedone: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error updating quality',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function updateinprogress(Request $request, string $id)
+    {
+        try {
+            $quality = Quality::find($id);
+            if (!$quality) {
+                return response()->json(['message' => 'Quality not found'], 404);
+            }
+
+            $validated = $request->validate([
+                'status' => 'required|integer|in:0,1,2',
+                'imagesprogress' => 'nullable',
+                'imagesprogress.*' => 'image|mimes:jpg,jpeg,png|max:20240',
+                'description_progress' => 'sometimes|required|string|max:255',
+            ]);
+
+            if ($request->hasFile('imagesprogress')) {
+                foreach ($request->file('imagesprogress') as $image) {
+                    if ($image->isValid()) {
+                        $path = $image->store('image_path_inprogress', 'public');
+                        $quality->imagesprogress()->create([
+                            'image_path_inprogress' => $path
+                        ]);
+                    }
+                }
+            }
+
+
+            if (isset($validated['description_progress'])) {
+                $quality->description_progress = $validated['description_progress'];
+            }
+
+            if ($request->status == 1 && !$quality->date_end) {
+                $quality->date_end = now();
+            }
+
+            if (isset($validated['status'])) {
+                $quality->status = $validated['status'];
+            }
             $quality->updated_at = now();
             $quality->save();
 
@@ -322,7 +408,6 @@ class QualityController extends Controller
             ], 500);
         }
     }
-
 
     public function destroy(Quality $quality)
     {

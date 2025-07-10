@@ -22,6 +22,8 @@ class Quality extends Model
         'status_relevan',
         'comment',
         'description_relevan',
+        'comment_done',
+        'description_progress',
     ];
 
     protected $casts = [
@@ -38,7 +40,8 @@ class Quality extends Model
     {
         return match ($this->status) {
             0 => 'waiting',
-            1 => 'Done',
+            1 => 'Inprogress',
+            2 => 'Done',
             default => 'Unknown'
         };
     }
@@ -71,5 +74,9 @@ class Quality extends Model
     public function userTo()
     {
         return $this->belongsTo(User::class, 'user_id_to');
+    }
+    public function imagesprogress()
+    {
+        return $this->hasMany(QualityImageInprogress::class, 'quality_id');
     }
 }

@@ -112,6 +112,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/qualities/updaterelevanstatus/{id}', [QualityController::class, 'updaterelevanstatus']);
     Route::post('/qualities/updatenotrelevanstatus/{id}', [QualityController::class, 'updatenotrelevanstatus']);
 
+    Route::post('/qualities/updatedone/{id}', [QualityController::class, 'updatedone']);
+    Route::post('/qualities/updateinprogress/{id}', [QualityController::class, 'updateinprogress']);
+
     Route::get('/quality/export', [QualityController::class, 'exportSummary'])->name('quality.export');
     Route::get('/work-orders', [QualityController::class, 'workorder_list']);
     //    Route::post('/send-notification', function (Request $request) {

@@ -28,12 +28,16 @@ class QualityResource extends JsonResource
             'description' => $this->description ?? '',
             'responds' => (bool) $this->responds,
 
-            'image_urls' => collect($this->images)
+            // 'image_urls' => collect($this->images)
+            //     ->map(fn($img) => $img->image_path)
+            //     ->values()
+            //     ->all(),
+            'image_urls' => collect($this->images ?? [])
                 ->map(fn($img) => $img->image_path)
                 ->values()
                 ->all(),
 
-           'date' => $this->date ? $this->date->format('Y-m-d H:i:s') : null,
+            'date' => $this->date ? $this->date->format('Y-m-d H:i:s') : null,
             'user_id_to' => $this->user_id_to !== null ? (int) $this->user_id_to : null,
             'user_to_name' => optional($this->userTo)->name,
 
@@ -42,10 +46,28 @@ class QualityResource extends JsonResource
             'comment' => $this->comment ?? null,
             'description_relevan' => $this->description_relevan ?? null,
 
-            'image_relevan_urls' => collect($this->imagesrelevan)
+            // 'image_relevan_urls' => collect($this->imagesrelevan)
+            //     ->map(fn($img) => $img->image_path_relevan)
+            //     ->values()
+            //     ->all(),
+            'image_relevan_urls' => collect($this->imagesrelevan ?? [])
                 ->map(fn($img) => $img->image_path_relevan)
                 ->values()
                 ->all(),
+
+            'comment_done' => $this->comment_done ?? null,
+
+            'description_progress' => $this->description_progress ?? null,
+
+            // 'image_progress_urls' => collect($this->imagesprogress)
+            //     ->map(fn($img) => $img->image_path_inprogress)
+            //     ->values()
+            //     ->all(),
+            'image_progress_urls' => collect($this->imagesprogress ?? [])
+                ->map(fn($img) => $img->image_path_inprogress)
+                ->values()
+                ->all(),
+
 
             'date_end' => $this->date_end ? Carbon::parse($this->date_end)->format('Y-m-d H:i:s') : null,
             'created_at' => optional($this->created_at)->toDateTimeString(),
