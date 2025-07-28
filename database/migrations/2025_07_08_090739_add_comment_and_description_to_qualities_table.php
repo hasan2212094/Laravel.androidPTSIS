@@ -13,7 +13,7 @@ return new class extends Migration
     {
          Schema::table('qualities', function (Blueprint $table) {
             $table->text('comment_done')->nullable()->after('status'); // tambahkan setelah kolom status
-            $table->text('description_progress')->nullable()->after('comment');
+            $table->text('description_progress')->nullable()->after('comment_done');
         });
     }
 

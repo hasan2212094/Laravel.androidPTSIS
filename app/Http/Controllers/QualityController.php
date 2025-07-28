@@ -343,12 +343,10 @@ class QualityController extends Controller
             }
 
 
-
             $quality->status = $validated['status'];
             $quality->updated_at = now();
             $quality->save();
 
-            $quality->load(['workorder', 'images', 'imagesrelevan', 'imagesprogress', 'userBy', 'userTo']);
 
             return response()->json(['message' => 'Quality updated successfully', 'data' => new QualityResource($quality),], 200);
         } catch (\Exception $e) {
@@ -371,7 +369,7 @@ class QualityController extends Controller
                 'status' => 'required|integer|in:0,1,2',
                 'imagesprogress' => 'nullable',
                 'imagesprogress.*' => 'image|mimes:jpg,jpeg,png|max:20240',
-                'description_progress' => 'sometimes|required|string|max:255',
+                'description_progress' => 'nullable|required|string|max:255',
             ]);
 
             if ($request->hasFile('imagesprogress')) {
@@ -390,9 +388,6 @@ class QualityController extends Controller
                 $quality->description_progress = $validated['description_progress'];
             }
 
-            if ($request->status == 1 && !$quality->date_end) {
-                $quality->date_end = now();
-            }
 
             if (isset($validated['status'])) {
                 $quality->status = $validated['status'];
