@@ -537,7 +537,7 @@ class QualityController extends Controller
         return response()->json([
             'message' => 'Data viewer berhasil disimpan',
             'data' => new QualityViewerResource($viewer)
-        ], 201);
+        ], 200);
     }
 
     public function exportSummary(Request $request)
