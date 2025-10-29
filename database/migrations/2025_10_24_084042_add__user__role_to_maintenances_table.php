@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-         Schema::table('qualities', function (Blueprint $table) {
-        $table->unsignedBigInteger('user_id_by')->nullable();
-        $table->unsignedBigInteger('user_id_to')->nullable();
-        $table->unsignedBigInteger('role_by')->nullable();
-        $table->unsignedBigInteger('role_to')->nullable();
+        Schema::table('maintenances', function (Blueprint $table) {
+           $table->unsignedBigInteger('user_id_by')->nullable();
+           $table->unsignedBigInteger('user_id_to')->nullable();
+           $table->unsignedBigInteger('role_by')->nullable();
+          $table->unsignedBigInteger('role_to')->nullable();
 
         // Jika perlu foreign key:
         $table->foreign('user_id_by')->references('id')->on('users')->onDelete('set null');
         $table->foreign('user_id_to')->references('id')->on('users')->onDelete('set null');
         $table->foreign('role_by')->references('id')->on('roles')->onDelete('set null');
         $table->foreign('role_to')->references('id')->on('roles')->onDelete('set null');
-    });
+        });
     }
 
     /**
@@ -30,7 +30,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('qualities', function (Blueprint $table) {
+        Schema::table('maintenances', function (Blueprint $table) {
             //
         });
     }

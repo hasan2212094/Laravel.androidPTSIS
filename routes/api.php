@@ -10,7 +10,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\QualityController;
 use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\NotificationController;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -121,5 +123,18 @@ Route::middleware('auth:sanctum')->group(function () {
     //     Log::info('Notifikasi diterima: ' . $request->message);
     //     return response()->json(['status' => 'success', 'data' => $request->all()]);
     // });
+    Route::post('/maintenances', [MaintenanceController::class, 'store']);
+    Route::get('/maintenances', [MaintenanceController::class, 'index']);
+    Route::put('/maintenances/{id}', [MaintenanceController::class, 'update']);
+    Route::get('/maintenances/{id}', [MaintenanceController::class, 'show']);
+
+    Route::post('/maintenances/updatedone/{id}',[MaintenanceController::class, 'updatedone']);
+    Route::get('/maintenancesdelete', [MaintenanceController::class, 'indexdelete']); // ambil semua
+    Route::delete('/maintenances/{maintenance}', [MaintenanceController::class, 'destroy']); // hapus sementara
+    Route::put('/maintenances/restore/{id}', [MaintenanceController::class, 'restore']); //kembalikan data yang hilang
+    Route::delete('/maintenances/force-delete/{id}', [MaintenanceController::class, 'forceDelete']); //hapus permanet
+    Route::get('/maintenance/export', [MaintenanceController::class, 'export']);
+    Route::get('/equipment', [MaintenanceController::class, 'equipment_list']);
+
 
 });
