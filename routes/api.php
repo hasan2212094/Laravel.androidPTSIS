@@ -10,8 +10,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\QualityController;
 use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\FabrikasiController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\NotificationController;
+use App\Models\Fabrikasi;
 use Illuminate\Support\Facades\Mail;
 
 /*
@@ -123,18 +125,32 @@ Route::middleware('auth:sanctum')->group(function () {
     //     Log::info('Notifikasi diterima: ' . $request->message);
     //     return response()->json(['status' => 'success', 'data' => $request->all()]);
     // });
+    
+    Route::get('/maintenance/export', [MaintenanceController::class, 'export']);
     Route::post('/maintenances', [MaintenanceController::class, 'store']);
     Route::get('/maintenances', [MaintenanceController::class, 'index']);
     Route::put('/maintenances/{id}', [MaintenanceController::class, 'update']);
     Route::get('/maintenances/{id}', [MaintenanceController::class, 'show']);
-
     Route::post('/maintenances/updatedone/{id}',[MaintenanceController::class, 'updatedone']);
     Route::get('/maintenancesdelete', [MaintenanceController::class, 'indexdelete']); // ambil semua
     Route::delete('/maintenances/{maintenance}', [MaintenanceController::class, 'destroy']); // hapus sementara
     Route::put('/maintenances/restore/{id}', [MaintenanceController::class, 'restore']); //kembalikan data yang hilang
     Route::delete('/maintenances/force-delete/{id}', [MaintenanceController::class, 'forceDelete']); //hapus permanet
-    Route::get('/maintenance/export', [MaintenanceController::class, 'export']);
     Route::get('/equipment', [MaintenanceController::class, 'equipment_list']);
+
+    Route::get('/fabrikasi/export', [FabrikasiController::class, 'export']); 
+    Route::get('/fabrikasi', [FabrikasiController::class, 'index']);
+    Route::post('/fabrikasi', [FabrikasiController::class, 'store']);
+    Route::get('/fabrikasi/{id}', [FabrikasiController::class, 'show']);
+    Route::put('/fabrikasi/{id}', [FabrikasiController::class, 'update']);
+    Route::post('/fabrikasi/updatedone/{id}',[FabrikasiController::class, 'updatedone']);
+    Route::get('/fabrikasidelete', [FabrikasiController::class, 'indexdelete']); // ambil semua
+    Route::delete('/fabrikasi/{fabrikasi}', [FabrikasiController::class, 'destroy']); // hapus sementara
+    Route::put('/fabrikasi/restore/{id}', [FabrikasiController::class, 'restore']); //kembalikan data yang hilang
+    Route::delete('/fabrikasi/force-delete/{id}', [FabrikasiController::class, 'forceDelete']); //hapus permanet
+    Route::get('/work-orders', [FabrikasiController::class, 'workorder_list']);
+
+    
 
 
 });

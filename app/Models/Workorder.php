@@ -14,4 +14,7 @@ class Workorder extends Model
      public function quality(){
         return $this->hasMany(Quality::class);
     }
+    public function fabrikasi(){
+        return $this->hasMany(Fabrikasi::class, 'workorder_id');
+    }
 }
