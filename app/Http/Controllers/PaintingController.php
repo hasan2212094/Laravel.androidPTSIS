@@ -2,31 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Fabrikasi;
+use App\Exports\PaintingExport;
+use App\Models\Painting;
 use App\Models\Workorder;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Exports\FabrikasiExport;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Http\Resources\FabrikasiResource;
+use App\Http\Resources\PaintingResource;
 use App\Http\Resources\WorkOrderResource;
-use FabrikasiExport as GlobalFabrikasiExport;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-class FabrikasiController extends Controller
+class PaintingController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-    $fabrikasi = Fabrikasi::with(['workorder', 'userBy', 'userTo'])->get();
+       $painting = Painting::with(['workorder', 'userBy', 'userTo'])->get();
 
     // Log beberapa contoh untuk debug
-    foreach ($fabrikasi->take(3) as $f) {
+    foreach ($painting->take(3) as $f) {
         Log::info('Workorder relation:', [
             'id' => $f->id,
             'workorder' => $f->workorder ? $f->workorder->nomor : null,
@@ -35,9 +34,10 @@ class FabrikasiController extends Controller
 
     return response()->json([
         'status' => true,
-        'data' => FabrikasiResource::collection($fabrikasi),
+        'data' => PaintingResource::collection($painting),
     ]);
     }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -51,7 +51,7 @@ class FabrikasiController extends Controller
      */
     public function store(Request $request)
     {
-       Log::info('🔹 Incoming Fabrikasi Request', $request->all());
+      Log::info('🔹 Incoming Fabrikasi Request', $request->all());
 
     // Validasi input
     $validationRules = [
@@ -99,17 +99,17 @@ class FabrikasiController extends Controller
 
     try {
         // Simpan data utama
-        $fabrikasi = Fabrikasi::create($validated);
+        $painting = Painting::create($validated);
 
-        Log::info('✅ Maintenance created successfully', [
-            'id' => $fabrikasi->id,
+        Log::info('✅ Painting created successfully', [
+            'id' => $painting->id,
             'data' => $validated,
         ]);
 
 
         return response()->json([
             'message' => 'Data berhasil disimpan',
-            'data' => new FabrikasiResource($fabrikasi->load(['workorder', 'userBy', 'userTo'])),
+            'data' => new PaintingResource($painting->load(['workorder', 'userBy', 'userTo'])),
         ], 201);
 
     } catch (\Exception $e) {
@@ -123,8 +123,9 @@ class FabrikasiController extends Controller
             'detail' => $e->getMessage(),
         ], 500);
     }
+    
     }
-    public function workorder_list()
+      public function workorder_list()
     {
         return WorkOrderResource::collection(Workorder::all());
     }
@@ -133,11 +134,11 @@ class FabrikasiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
-    {
-      $fabrikasi = Fabrikasi::with(['workorder', 'userBy', 'userTo'])->find($id);
+    public function show(string $id)
+     {
+      $painting = Painting::with(['workorder', 'userBy', 'userTo'])->find($id);
 
-    if (!$fabrikasi) {
+    if (!$painting) {
         return response()->json([
             'message' => 'Data tidak ditemukan',
             'data' => null
@@ -146,10 +147,9 @@ class FabrikasiController extends Controller
 
     return response()->json([
         'message' => 'Data ditemukan',
-        'data' => new FabrikasiResource($fabrikasi)
+        'data' => new PaintingResource($painting)
     ]);
     }
-
     /**
      * Show the form for editing the specified resource.
      */
@@ -163,9 +163,9 @@ class FabrikasiController extends Controller
      */
     public function update(Request $request, string $id)
     {
-         try {
+        try {
            
-            $fabrikasi = Fabrikasi::findOrFail($id);
+            $painting = Painting::findOrFail($id);
 
             // Validasi input
             $validated = $request->validate([
@@ -183,13 +183,13 @@ class FabrikasiController extends Controller
                 $validated['date_start'] = $quality->date ?? now();
             }
 
-            $fabrikasi->update($validated);
+            $painting->update($validated);
             // Update assignment dengan data yang sudah divalidasi
-            $fabrikasi->update($validated);
+            $painting->update($validated);
 
             return response()->json([
-                'message' => 'Fabrikasi updated successfully',
-                'data' => new FabrikasiResource($fabrikasi->load(['workorder']))
+                'message' => 'Painting updated successfully',
+                'data' => new PaintingResource($painting->load(['workorder']))
             ], 200);
         } catch (ValidationException $e) {
             return response()->json([
@@ -203,11 +203,11 @@ class FabrikasiController extends Controller
             ], 500);
         }
     }
-     public function updatedone(Request $request, string $id)
+    public function updatedone(Request $request, string $id)
    {
     try {
-        $fabrikasi = Fabrikasi::find($id);
-        if (!$fabrikasi) {
+        $painting = Painting::find($id);
+        if (!$painting) {
             return response()->json(['message' => 'Maintenance not found'], 404);
         }
 
@@ -218,28 +218,28 @@ class FabrikasiController extends Controller
         ]);
         // Update comment
         if (isset($validated['comment_done'])) {
-            $fabrikasi->comment_done = $validated['comment_done'];
+            $painting->comment_done = $validated['comment_done'];
         }
 
         // Update status + date_end otomatis
         if (isset($validated['status_pekerjaan'])) {
-            $fabrikasi->status_pekerjaan = $validated['status_pekerjaan'];
+            $painting->status_pekerjaan = $validated['status_pekerjaan'];
             if ($validated['status_pekerjaan'] == 1) {
-                $fabrikasi->date_end = $fabrikasi->date_end
-                    ? Carbon::parse($fabrikasi->date_end)->setTimeFromTimeString(now()->format('H:i:s'))
+                $painting->date_end = $painting->date_end
+                    ? Carbon::parse($painting->date_end)->setTimeFromTimeString(now()->format('H:i:s'))
                     : now();
             }
         }
 
         if (array_key_exists('user_id_to', $validated)) {
-            $fabrikasi->user_id_to = $validated['user_id_to'];
+            $painting->user_id_to = $validated['user_id_to'];
         }
 
-        $fabrikasi->save();
+        $painting->save();
 
         return response()->json([
             'message' => 'Painting updated successfully',
-            'data' => new FabrikasiResource($fabrikasi->load(['workorder'])),
+            'data' => new PaintingResource($painting->load(['workorder'])),
         ], 200);
 
     } catch (\Exception $e) {
@@ -253,42 +253,42 @@ class FabrikasiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-     public function indexdelete()
+    public function indexdelete()
     {
-        $fabrikasi = Fabrikasi::withTrashed()->get();
+        $painting = Painting::withTrashed()->get();
 
         return response()->json([
             'message' => 'Data ditemukan',
-            'data' => FabrikasiResource::collection($fabrikasi)
+            'data' => PaintingResource::collection($painting)
         ]);
     }
-    public function destroy(Fabrikasi $fabrikasi)
+    public function destroy(Painting $painting)
     {
-        $fabrikasi->delete();
+        $painting->delete();
         return response()->json([
             'message' => 'Data berhasil dihapus (soft delete)'
         ]);
     }
     public function restore($id)
     {
-        $fabrikasi = Fabrikasi::withTrashed()->findOrFail($id);
-        $fabrikasi->restore();
+        $painting = Painting::withTrashed()->findOrFail($id);
+        $painting->restore();
 
         return response()->json([
             'message' => 'Data berhasil direstore',
-            'data' => new FabrikasiResource($fabrikasi)
+            'data' => new PaintingResource($painting)
         ]);
     }
      public function forceDelete($id)
     {
-        $fabrikasi = Fabrikasi::withTrashed()->findOrFail($id);
-        $fabrikasi->forceDelete();
+        $painting = Painting::withTrashed()->findOrFail($id);
+        $painting->forceDelete();
 
         return response()->json(['message' => 'Data dihapus permanen.']);
     }
     public function export()
     {
         $fileName = 'fabrikasi_export_' . now()->format('Ymd_His') . '.xlsx';
-        return Excel::download(new FabrikasiExport, $fileName);
+        return Excel::download(new PaintingExport, $fileName);
     }
 }

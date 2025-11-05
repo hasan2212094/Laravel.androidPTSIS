@@ -2,31 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Fabrikasi;
+use App\Models\Komponen;
 use App\Models\Workorder;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Exports\FabrikasiExport;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Http\Resources\FabrikasiResource;
+use App\Http\Resources\KomponenResource;
 use App\Http\Resources\WorkOrderResource;
-use FabrikasiExport as GlobalFabrikasiExport;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use App\Exports\KomponenExport;
 
-class FabrikasiController extends Controller
+class KomponenController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-    $fabrikasi = Fabrikasi::with(['workorder', 'userBy', 'userTo'])->get();
+       $komponen = Komponen::with(['workorder', 'userBy', 'userTo'])->get();
 
     // Log beberapa contoh untuk debug
-    foreach ($fabrikasi->take(3) as $f) {
+    foreach ($komponen->take(3) as $f) {
         Log::info('Workorder relation:', [
             'id' => $f->id,
             'workorder' => $f->workorder ? $f->workorder->nomor : null,
@@ -35,9 +34,10 @@ class FabrikasiController extends Controller
 
     return response()->json([
         'status' => true,
-        'data' => FabrikasiResource::collection($fabrikasi),
+        'data' => KomponenResource::collection($komponen),
     ]);
     }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -51,13 +51,14 @@ class FabrikasiController extends Controller
      */
     public function store(Request $request)
     {
-       Log::info('🔹 Incoming Fabrikasi Request', $request->all());
+        Log::info('🔹 Incoming Komponen Request', $request->all());
 
     // Validasi input
     $validationRules = [
         'user_id_by' => 'required|exists:users,id',
         'jenis_Pekerjaan' => 'required|string',
         'keterangan' => 'nullable|string',
+        'spekifikasi' => 'nullable|string',
         'qty'=>'required|string',
         'status_pekerjaan' => 'required|integer|in:0,1,2',
         'workorder_id' => 'required|exists:workorders,id',
@@ -78,6 +79,7 @@ class FabrikasiController extends Controller
         'user_id_by',
         'jenis_Pekerjaan',
         'keterangan',
+        'spekifikasi',
         'qty',
         'status_pekerjaan',
         'workorder_id',
@@ -99,17 +101,17 @@ class FabrikasiController extends Controller
 
     try {
         // Simpan data utama
-        $fabrikasi = Fabrikasi::create($validated);
+        $komponen  = Komponen::create($validated);
 
         Log::info('✅ Maintenance created successfully', [
-            'id' => $fabrikasi->id,
+            'id' => $komponen->id,
             'data' => $validated,
         ]);
 
 
         return response()->json([
             'message' => 'Data berhasil disimpan',
-            'data' => new FabrikasiResource($fabrikasi->load(['workorder', 'userBy', 'userTo'])),
+            'data' => new KomponenResource($komponen->load(['workorder', 'userBy', 'userTo'])),
         ], 201);
 
     } catch (\Exception $e) {
@@ -133,11 +135,11 @@ class FabrikasiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(string $id)
     {
-      $fabrikasi = Fabrikasi::with(['workorder', 'userBy', 'userTo'])->find($id);
+          $komponen = Komponen::with(['workorder', 'userBy', 'userTo'])->find($id);
 
-    if (!$fabrikasi) {
+    if (!$komponen) {
         return response()->json([
             'message' => 'Data tidak ditemukan',
             'data' => null
@@ -146,7 +148,7 @@ class FabrikasiController extends Controller
 
     return response()->json([
         'message' => 'Data ditemukan',
-        'data' => new FabrikasiResource($fabrikasi)
+        'data' => new KomponenResource($komponen)
     ]);
     }
 
@@ -163,15 +165,16 @@ class FabrikasiController extends Controller
      */
     public function update(Request $request, string $id)
     {
-         try {
+        try {
            
-            $fabrikasi = Fabrikasi::findOrFail($id);
+            $komponen = Komponen::findOrFail($id);
 
             // Validasi input
             $validated = $request->validate([
                  'jenis_Pekerjaan' => 'required|string',
                  'keterangan' => 'nullable|string',
                  'qty'=>'required|string',
+                 'spekifikasi' => 'nullable|string',
                  'workorder_id' => 'required|exists:workorders,id',
                 
             ]);
@@ -183,13 +186,13 @@ class FabrikasiController extends Controller
                 $validated['date_start'] = $quality->date ?? now();
             }
 
-            $fabrikasi->update($validated);
+            $komponen->update($validated);
             // Update assignment dengan data yang sudah divalidasi
-            $fabrikasi->update($validated);
+            $komponen->update($validated);
 
             return response()->json([
-                'message' => 'Fabrikasi updated successfully',
-                'data' => new FabrikasiResource($fabrikasi->load(['workorder']))
+                'message' => 'Komponen updated successfully',
+                'data' => new KomponenResource($komponen->load(['workorder']))
             ], 200);
         } catch (ValidationException $e) {
             return response()->json([
@@ -206,8 +209,8 @@ class FabrikasiController extends Controller
      public function updatedone(Request $request, string $id)
    {
     try {
-        $fabrikasi = Fabrikasi::find($id);
-        if (!$fabrikasi) {
+        $komponen = Komponen::find($id);
+        if (!$komponen) {
             return response()->json(['message' => 'Maintenance not found'], 404);
         }
 
@@ -218,28 +221,28 @@ class FabrikasiController extends Controller
         ]);
         // Update comment
         if (isset($validated['comment_done'])) {
-            $fabrikasi->comment_done = $validated['comment_done'];
+            $komponen->comment_done = $validated['comment_done'];
         }
 
         // Update status + date_end otomatis
         if (isset($validated['status_pekerjaan'])) {
-            $fabrikasi->status_pekerjaan = $validated['status_pekerjaan'];
+            $komponen->status_pekerjaan = $validated['status_pekerjaan'];
             if ($validated['status_pekerjaan'] == 1) {
-                $fabrikasi->date_end = $fabrikasi->date_end
-                    ? Carbon::parse($fabrikasi->date_end)->setTimeFromTimeString(now()->format('H:i:s'))
+                $komponen->date_end = $komponen->date_end
+                    ? Carbon::parse($komponen->date_end)->setTimeFromTimeString(now()->format('H:i:s'))
                     : now();
             }
         }
 
         if (array_key_exists('user_id_to', $validated)) {
-            $fabrikasi->user_id_to = $validated['user_id_to'];
+            $komponen->user_id_to = $validated['user_id_to'];
         }
 
-        $fabrikasi->save();
+        $komponen->save();
 
         return response()->json([
-            'message' => 'Painting updated successfully',
-            'data' => new FabrikasiResource($fabrikasi->load(['workorder'])),
+            'message' => 'Maintenance updated successfully',
+            'data' => new KomponenResource($komponen->load(['workorder'])),
         ], 200);
 
     } catch (\Exception $e) {
@@ -248,47 +251,47 @@ class FabrikasiController extends Controller
             'error' => $e->getMessage(),
         ], 500);
     }
-}
+    }
 
     /**
      * Remove the specified resource from storage.
      */
      public function indexdelete()
     {
-        $fabrikasi = Fabrikasi::withTrashed()->get();
+        $komponen = Komponen::withTrashed()->get();
 
         return response()->json([
             'message' => 'Data ditemukan',
-            'data' => FabrikasiResource::collection($fabrikasi)
+            'data' => KomponenResource::collection($komponen)
         ]);
     }
-    public function destroy(Fabrikasi $fabrikasi)
+    public function destroy(Komponen $komponen)
     {
-        $fabrikasi->delete();
+        $komponen->delete();
         return response()->json([
             'message' => 'Data berhasil dihapus (soft delete)'
         ]);
     }
     public function restore($id)
     {
-        $fabrikasi = Fabrikasi::withTrashed()->findOrFail($id);
-        $fabrikasi->restore();
+        $komponen = Komponen::withTrashed()->findOrFail($id);
+        $komponen->restore();
 
         return response()->json([
             'message' => 'Data berhasil direstore',
-            'data' => new FabrikasiResource($fabrikasi)
+            'data' => new KomponenResource($komponen)
         ]);
     }
      public function forceDelete($id)
     {
-        $fabrikasi = Fabrikasi::withTrashed()->findOrFail($id);
-        $fabrikasi->forceDelete();
+        $komponen = Komponen::withTrashed()->findOrFail($id);
+        $komponen->forceDelete();
 
         return response()->json(['message' => 'Data dihapus permanen.']);
     }
     public function export()
     {
         $fileName = 'fabrikasi_export_' . now()->format('Ymd_His') . '.xlsx';
-        return Excel::download(new FabrikasiExport, $fileName);
+        return Excel::download(new KomponenExport, $fileName);
     }
 }

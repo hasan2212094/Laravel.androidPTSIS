@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Exports;
+
+use App\Models\Fabrikasi;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+
+class PaintingExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize
+{
+    public function collection()
+{
+    return Fabrikasi::all(); // tanpa relasi dulu
+}
+
+    public function headings(): array
+    {
+        return [
+            'ID',
+            'User By',
+            'User To',
+            'Jenis Pekerjaan',
+            'Keterangan',
+            'Status Pekerjaan',
+            'Tanggal Mulai',
+            'Tanggal Selesai',
+            'Comment Done',
+            'No WO',
+        ];
+    }
+
+    public function map($fabrikasi): array
+    {
+        return [
+            $fabrikasi->id,
+            optional($fabrikasi->userBy)->name,
+            optional($fabrikasi->userTo)->name,
+            $fabrikasi->jenis_Pekerjaan,
+            $fabrikasi->keterangan,
+            $fabrikasi->status_pekerjaan == 1 ? 'Done' : 'Progress',
+            $fabrikasi->date_start,
+            $fabrikasi->date_end,
+            $fabrikasi->comment_done,
+            optional($fabrikasi->workorder)->nomor,
+        ];
+    }
+}
