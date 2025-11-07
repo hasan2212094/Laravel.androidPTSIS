@@ -16,7 +16,7 @@ class MaintenanceResource extends JsonResource
     public function toArray(Request $request): array
     {
   return [
-    'id' => $this->id,
+    'id' => (int) $this->id,
     'user_id_by' => $this->user_id_by !== null ? (int) $this->user_id_by : null,
     'user_by_name' => optional($this->userBy)->name,
     'name_mesin' => $this->name_mesin,
@@ -37,7 +37,7 @@ class MaintenanceResource extends JsonResource
         : null,
 
     // Relasi equipment
-    'equipment_id' => $this->equipment_id,
+    'equipment_id' => (int) $this->equipment_id,
     'equipment' => $this->whenLoaded('equipment', function () {
         return [
             'id' => $this->equipment->id ?? null,
@@ -56,12 +56,12 @@ class MaintenanceResource extends JsonResource
         ->filter()
         ->values()
         ->all(),
- 'images_done' => $this->images_done
-    ->map(fn($img) => $img->image_path_done ? asset('storage/' . $img->image_path_done) : null)
-    ->filter()
-    ->values()
-    ->all(),
-    'comment_done' => $this->comment_done ?? null,
+      'images_done' => $this->images_done
+         ->map(fn($img) => $img->image_path_done ? asset('storage/' . $img->image_path_done) : null)
+         ->filter()
+         ->values()
+         ->all(),
+         'comment_done' => $this->comment_done ?? null,
 
     // Timestamp
     'created_at' => $this->created_at 

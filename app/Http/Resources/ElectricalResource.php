@@ -16,7 +16,7 @@ class ElectricalResource extends JsonResource
         public function toArray(Request $request): array
     {
   return [
-    'id' => $this->id,
+    'id' => (int) $this->id,
     'user_id_by' => $this->user_id_by !== null ? (int) $this->user_id_by : null,
     'user_by_name' => optional($this->userBy)->name,
     'jenis_Pekerjaan' => $this->jenis_Pekerjaan,
