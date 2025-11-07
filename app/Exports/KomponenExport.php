@@ -32,7 +32,9 @@ class KomponenExport implements FromCollection, WithHeadings, WithMapping, Shoul
         ];
     }
 
-    public function map($komponen): array
+    public function map($komponen
+    
+    ): array
     {
         return [
             $komponen->id,
