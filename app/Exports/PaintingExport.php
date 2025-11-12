@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Fabrikasi;
+use App\Models\Painting;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -10,10 +10,10 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
 class PaintingExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize
 {
-    public function collection()
-{
-    return Fabrikasi::all(); // tanpa relasi dulu
-}
+ public function collection()
+  {
+        return Painting::with(['userBy', 'userTo', 'workorder'])->get();
+  }
 
     public function headings(): array
     {
@@ -22,6 +22,7 @@ class PaintingExport implements FromCollection, WithHeadings, WithMapping, Shoul
             'User By',
             'User To',
             'Jenis Pekerjaan',
+            'Qty',
             'Keterangan',
             'Status Pekerjaan',
             'Tanggal Mulai',
@@ -31,19 +32,23 @@ class PaintingExport implements FromCollection, WithHeadings, WithMapping, Shoul
         ];
     }
 
-    public function map($fabrikasi): array
+    /**
+     * @param \App\Models\Painting $painting
+     */
+    public function map($painting): array
     {
         return [
-            $fabrikasi->id,
-            optional($fabrikasi->userBy)->name,
-            optional($fabrikasi->userTo)->name,
-            $fabrikasi->jenis_Pekerjaan,
-            $fabrikasi->keterangan,
-            $fabrikasi->status_pekerjaan == 1 ? 'Done' : 'Progress',
-            $fabrikasi->date_start,
-            $fabrikasi->date_end,
-            $fabrikasi->comment_done,
-            optional($fabrikasi->workorder)->nomor,
+            $painting->id,
+            optional($painting->userBy)->name ?? '-',
+            optional($painting->userTo)->name ?? '-',
+            $painting->jenis_pekerjaan ?? '-', // pastikan nama kolom sesuai di DB
+            $painting->qty ?? '-',
+            $painting->keterangan ?? '-',
+            $painting->status_pekerjaan == 1 ? 'Done' : 'Progress',
+            $painting->date_start ?? '-',
+            $painting->date_end ?? '-',
+            $painting->comment_done ?? '-',
+            optional($painting->workorder)->nomor ?? '-',
         ];
     }
 }

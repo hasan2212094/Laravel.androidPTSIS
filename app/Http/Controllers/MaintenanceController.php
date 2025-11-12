@@ -25,9 +25,9 @@ class MaintenanceController extends Controller
         $maintenances = Maintenance::with([ 'images','equipment', 'userBy', 'userTo', 'images_done'])->get();
 
         // Tambahkan log di sini
-        foreach ($maintenances as $q) {
+        foreach ($maintenances as $m) {
          Log::info('Maintenance info:', [
-        'no_serial' => $q->no_serial,
+        'no_serial' => $m->no_serial,
               ]);
           }
         $data = MaintenanceResource::collection($maintenances);
@@ -59,7 +59,7 @@ public function store(Request $request)
         'status_perbaikan' => 'required|integer|in:0,1,2',
         'equipment_id' => 'nullable|exists:equipment,id', 
         'date_start' => 'nullable|date',
-        'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:20240',
     ];
 
     $validator = Validator::make($request->all(), $validationRules);

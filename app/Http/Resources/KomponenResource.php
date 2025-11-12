@@ -33,6 +33,7 @@ class KomponenResource extends JsonResource
               : null,
             'workorder_id' => optional($this->workorder)->id !== null ? (int) $this->workorder->id : null,
             'no_wo' => optional($this->workorder)?->nomor,
+            'client' => optional($this->workorder)?->client,
             'user_id_to' => $this->user_id_to ? (int) $this->user_id_to : null,
             'user_to_name' => optional($this->userTo)->name,
             'comment_done' => $this->comment_done ?? null,

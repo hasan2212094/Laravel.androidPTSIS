@@ -12,7 +12,7 @@ class KomponenExport implements FromCollection, WithHeadings, WithMapping, Shoul
 {
     public function collection()
 {
-    return Komponen::all(); // tanpa relasi dulu
+   return Komponen::with(['userBy', 'userTo', 'workorder'])->get();
 }
 
     public function headings(): array
@@ -21,33 +21,35 @@ class KomponenExport implements FromCollection, WithHeadings, WithMapping, Shoul
             'ID',
             'User By',
             'User To',
+            'No WO',
             'Jenis Pekerjaan',
-            'Spekifikasi',
+            'Qty',
+            'Spesifikasi',
             'Keterangan',
             'Status Pekerjaan',
             'Tanggal Mulai',
             'Tanggal Selesai',
             'Comment Done',
-            'No WO',
         ];
     }
-
-    public function map($komponen
-    
-    ): array
-    {
-        return [
-            $komponen->id,
-            optional($komponen->userBy)->name,
-            optional($komponen->userTo)->name,
-            $komponen->jenis_Pekerjaan,
-            $komponen->spekifikasi,
-            $komponen->keterangan,
-            $komponen->status_pekerjaan == 1 ? 'Done' : 'Progress',
-            $komponen->date_start,
-            $komponen->date_end,
-            $komponen->comment_done,
-            optional($komponen->workorder)->nomor,
-        ];
-    }
+/**
+ * @param \App\Models\Komponen $komponen
+ */
+public function map($komponen): array
+{
+    return [
+        $komponen->id,
+        optional($komponen->userBy)->name ?? '-',
+        optional($komponen->userTo)->name ?? '-',
+        optional($komponen->workorder)->nomor ?? '-',
+        $komponen->jenis_Pekerjaan ?? '-',
+        $komponen->qty ?? '-',
+        $komponen->spekifikasi ?? '-',
+        $komponen->keterangan ?? '-',
+        $komponen->status_pekerjaan == 1 ? 'Done' : 'Progress',
+        $komponen->date_start ?? '-',
+        $komponen->date_end ?? '-',
+        $komponen->comment_done ?? '-',
+    ];
+}
 }

@@ -17,6 +17,7 @@ class WorkOrderResource extends JsonResource
         return [
             'id' => $this->id,
             'nomor' => $this->nomor,
+            'client' => $this->client,
         ];
     }
 }

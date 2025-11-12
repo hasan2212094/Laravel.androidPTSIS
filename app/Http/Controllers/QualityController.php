@@ -28,7 +28,7 @@ class QualityController extends Controller
         foreach ($qualities as $q) {
             Log::info('Workorder relation:', [
                 'quality_id' => $q->id,
-                'workorder' => $q->workorder,
+                'workorder' => $q->workorder ? $q->workorder->nomor : null,
             ]);
         }
 
@@ -51,7 +51,7 @@ class QualityController extends Controller
         $validator = $validationRules = [
             'user_id_by' => 'required|exists:users,id',
             'project' => 'required',
-            'no_wo' => 'required|exists:workorders,id',
+            'workorder_id' => 'required|exists:workorders,id',
             'description' => 'required',
             'responds' => 'required|boolean',
             'images' => 'nullable|array',
@@ -66,7 +66,7 @@ class QualityController extends Controller
         $validated = Arr::only($validator->validated(), [
             'user_id_by',
             'project',
-            'no_wo',
+            'workorder_id',
             'description',
             'responds',
             'status'
@@ -165,7 +165,7 @@ class QualityController extends Controller
             $validated = $request->validate([
                 'user_id_by' => 'sometimes|exists:users,id',
                 'project' => 'required|string|max:255',
-                'no_wo' => 'required|exists:workorders,id',
+                'workorder_id' => 'required|exists:workorders,id',
                 'description' => 'required|string',
             ]);
 

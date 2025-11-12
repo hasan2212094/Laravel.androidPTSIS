@@ -24,6 +24,7 @@ class ElectricalExport implements FromCollection, WithHeadings, WithMapping, Sho
             'User By',
             'User To',
             'Jenis Pekerjaan',
+            'Qty',
             'Keterangan',
             'Status Pekerjaan',
             'Tanggal Mulai',
@@ -32,7 +33,9 @@ class ElectricalExport implements FromCollection, WithHeadings, WithMapping, Sho
             'No WO',
         ];
     }
-
+    /**
+     * @param \App\Models\electrical $electrical
+     */
     public function map($electrical): array
     {
         return [
@@ -40,6 +43,7 @@ class ElectricalExport implements FromCollection, WithHeadings, WithMapping, Sho
             optional($electrical->userBy)->name,
             optional($electrical->userTo)->name,
             $electrical->jenis_Pekerjaan,
+            $electrical->qty,
             $electrical->keterangan,
             $electrical->status_pekerjaan == 1 ? 'Done' : 'Progress',
             $electrical->date_start,

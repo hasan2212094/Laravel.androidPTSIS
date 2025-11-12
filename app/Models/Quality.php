@@ -14,7 +14,7 @@ class Quality extends Model
         'user_id_by',
         'user_id_to',
         'project',
-        'no_wo',
+        'workorder_id',
         'description',
         'responds',
         'date',
@@ -34,7 +34,7 @@ class Quality extends Model
     public $timestamps = true; // Tambahkan baris ini
     public function workorder()
     {
-        return $this->belongsTo(Workorder::class, 'no_wo');
+        return $this->belongsTo(Workorder::class, 'workorder_id');
     }
     public function getStatusLabelAttribute()
     {

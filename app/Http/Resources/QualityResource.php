@@ -22,8 +22,8 @@ class QualityResource extends JsonResource
             'user_by_name' => optional($this->userBy)->name,
             'project' => $this->project ?? '',
 
-            'work_order_id' => optional($this->workorder)->id !== null ? (int) $this->workorder->id : null,
-            'no_wo' => optional($this->workorder)->nomor ?? null,
+            'workorder_id' => optional($this->workorder)->id !== null ? (int) $this->workorder->id : null,
+            'no_wo' => optional($this->workorder)->nomor,
 
             'description' => $this->description ?? '',
             'responds' => (bool) $this->responds,

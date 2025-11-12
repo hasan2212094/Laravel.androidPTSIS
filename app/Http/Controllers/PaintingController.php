@@ -25,10 +25,10 @@ class PaintingController extends Controller
        $painting = Painting::with(['workorder', 'userBy', 'userTo'])->get();
 
     // Log beberapa contoh untuk debug
-    foreach ($painting->take(3) as $f) {
+    foreach ($painting->take(3) as $p) {
         Log::info('Workorder relation:', [
-            'id' => $f->id,
-            'workorder' => $f->workorder ? $f->workorder->nomor : null,
+            'id' => $p->id,
+            'workorder' => $p->workorder ? $p->workorder->nomor : null,
         ]);
     }
 

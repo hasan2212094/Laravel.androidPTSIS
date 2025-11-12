@@ -12,12 +12,13 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\QualityController;
 use App\Http\Controllers\KomponenController;
+use App\Http\Controllers\PaintingController;
 use App\Http\Controllers\FabrikasiController;
+use App\Http\Controllers\WorkorderController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ElectricalController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PaintingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -188,5 +189,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/electrical/restore/{id}', [ElectricalController::class, 'restore']); //kembalikan data yang hilang
     Route::delete('/electrical/force-delete/{id}', [ElectricalController::class, 'forceDelete']); //hapus permanet
     Route::get('/work-orders', [ElectricalController::class, 'workorder_list']);
+
+    Route::get('/workorder', [WorkorderController::class, 'index']);
+    Route::post('/workorder', [WorkorderController::class, 'store']);
+    Route::get('/workorder/{id}', [WorkorderController::class, 'show']);
+    Route::put('/workorder/{id}', [WorkorderController::class, 'update']);
+    Route::delete('/workorder/{id}',[WorkorderController::class, 'destroy']);
 
 });

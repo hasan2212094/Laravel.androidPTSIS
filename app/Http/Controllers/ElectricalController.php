@@ -21,12 +21,13 @@ class ElectricalController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {$electricals = Electrical::with([ 'images','workorder', 'userBy', 'userTo', 'images_done'])->get();
+    {/** @var \App\Models\Electrical $electrical */
+        $electricals = Electrical::with([ 'images','workorder', 'userBy', 'userTo', 'images_done'])->get();
 
         // Tambahkan log di sini
-        foreach ($electricals as $q) {
-         Log::info('Maintenance info:', [
-        'no_serial' => $q->no_serial,
+        foreach ($electricals as $e) {
+         Log::info('Electrical info:', [
+              'nomor' => $e->nomor,
               ]);
           }
         $data = ElectricalResource::collection($electricals);
@@ -61,7 +62,7 @@ class ElectricalController extends Controller
         'status_pekerjaan' => 'required|integer|in:0,1,2',
         'workorder_id' => 'required|exists:workorders,id', 
         'date_start' => 'nullable|date',
-        'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:20240',
     ];
 
     $validator = Validator::make($request->all(), $validationRules);

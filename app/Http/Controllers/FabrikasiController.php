@@ -26,10 +26,10 @@ class FabrikasiController extends Controller
     $fabrikasi = Fabrikasi::with(['workorder', 'userBy', 'userTo'])->get();
 
     // Log beberapa contoh untuk debug
-    foreach ($fabrikasi->take(3) as $f) {
+    foreach ($fabrikasi->take(3) as $fa) {
         Log::info('Workorder relation:', [
-            'id' => $f->id,
-            'workorder' => $f->workorder ? $f->workorder->nomor : null,
+            'id' => $fa->id,
+            'workorder' => $fa->workorder ? $fa->workorder->nomor : null,
         ]);
     }
 

@@ -38,6 +38,7 @@ class ElectricalResource extends JsonResource
     // Relasi workorder
     'workorder_id' => optional($this->workorder)->id !== null ? (int) $this->workorder->id : null,
     'no_wo' => optional($this->workorder)?->nomor,
+    'client' => optional($this->workorder)?->client,
 
     // Relasi user_to
     'user_id_to' => $this->user_id_to !== null ? (int) $this->user_id_to : null,
