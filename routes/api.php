@@ -18,6 +18,7 @@ use App\Http\Controllers\WorkorderController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ElectricalController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\MessengerController;
 use App\Http\Controllers\NotificationController;
 
 /*
@@ -195,5 +196,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/workorder/{id}', [WorkorderController::class, 'show']);
     Route::put('/workorder/{id}', [WorkorderController::class, 'update']);
     Route::delete('/workorder/{id}',[WorkorderController::class, 'destroy']);
+
+    Route::get('/messenger',[MessengerController::class, 'index']);
+    Route::post('/messenger',[MessengerController::class, 'store']);
+    Route::get('/messenger/{id}',[MessengerController::class,'show']);
+    Route::put('/messenger/{id}',[MessengerController::class,'update']);
+    Route::delete('/messenger/{id}',[MessengerController::class,'destroy']);
 
 });

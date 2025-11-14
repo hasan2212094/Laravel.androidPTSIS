@@ -23,15 +23,6 @@ class KomponenController extends Controller
     public function index()
     {
        $komponen = Komponen::with(['workorder', 'userBy', 'userTo'])->get();
-
-    // Log beberapa contoh untuk debug
-    foreach ($komponen->take(3) as $f) {
-        Log::info('Workorder relation:', [
-            'id' => $f->id,
-            'workorder' => $f->workorder ? $f->workorder->nomor : null,
-        ]);
-    }
-
     return response()->json([
         'status' => true,
         'data' => KomponenResource::collection($komponen),

@@ -23,13 +23,6 @@ class MaintenanceController extends Controller
     public function index()
     {
         $maintenances = Maintenance::with([ 'images','equipment', 'userBy', 'userTo', 'images_done'])->get();
-
-        // Tambahkan log di sini
-        foreach ($maintenances as $m) {
-         Log::info('Maintenance info:', [
-        'no_serial' => $m->no_serial,
-              ]);
-          }
         $data = MaintenanceResource::collection($maintenances);
 
         return response()->json([

@@ -23,15 +23,6 @@ class QualityController extends Controller
     public function index()
     {
         $qualities = Quality::with(['workorder', 'images'])->get();
-
-        // Tambahkan log di sini
-        foreach ($qualities as $q) {
-            Log::info('Workorder relation:', [
-                'quality_id' => $q->id,
-                'workorder' => $q->workorder ? $q->workorder->nomor : null,
-            ]);
-        }
-
         $data = QualityResource::collection($qualities);
 
         return response()->json([

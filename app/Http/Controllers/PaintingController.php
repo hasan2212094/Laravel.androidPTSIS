@@ -23,15 +23,6 @@ class PaintingController extends Controller
     public function index()
     {
        $painting = Painting::with(['workorder', 'userBy', 'userTo'])->get();
-
-    // Log beberapa contoh untuk debug
-    foreach ($painting->take(3) as $p) {
-        Log::info('Workorder relation:', [
-            'id' => $p->id,
-            'workorder' => $p->workorder ? $p->workorder->nomor : null,
-        ]);
-    }
-
     return response()->json([
         'status' => true,
         'data' => PaintingResource::collection($painting),

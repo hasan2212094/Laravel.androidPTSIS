@@ -21,15 +21,7 @@ class ElectricalController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {/** @var \App\Models\Electrical $electrical */
-        $electricals = Electrical::with([ 'images','workorder', 'userBy', 'userTo', 'images_done'])->get();
-
-        // Tambahkan log di sini
-        foreach ($electricals as $e) {
-         Log::info('Electrical info:', [
-              'nomor' => $e->nomor,
-              ]);
-          }
+    {$electricals = Electrical::with([ 'images','workorder', 'userBy', 'userTo', 'images_done'])->get();
         $data = ElectricalResource::collection($electricals);
 
         return response()->json([

@@ -41,7 +41,7 @@ class PaintingExport implements FromCollection, WithHeadings, WithMapping, Shoul
             $painting->id,
             optional($painting->userBy)->name ?? '-',
             optional($painting->userTo)->name ?? '-',
-            $painting->jenis_pekerjaan ?? '-', // pastikan nama kolom sesuai di DB
+            $painting->jenis_Pekerjaan ?? '-', // pastikan nama kolom sesuai di DB
             $painting->qty ?? '-',
             $painting->keterangan ?? '-',
             $painting->status_pekerjaan == 1 ? 'Done' : 'Progress',

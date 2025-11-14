@@ -41,7 +41,7 @@ class FabrikasiExport implements FromCollection, WithHeadings, WithMapping, Shou
             $fabrikasi->id,
             optional($fabrikasi->userBy)->name ?? '-',
             optional($fabrikasi->userTo)->name ?? '-',
-            $fabrikasi->jenis_pekerjaan ?? '-', // pastikan nama kolom sesuai di DB
+            $fabrikasi->jenis_Pekerjaan ?? '-', // pastikan nama kolom sesuai di DB
             $fabrikasi->qty ?? '-',
             $fabrikasi->keterangan ?? '-',
             $fabrikasi->status_pekerjaan == 1 ? 'Done' : 'Progress',

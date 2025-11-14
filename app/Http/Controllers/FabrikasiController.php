@@ -24,15 +24,6 @@ class FabrikasiController extends Controller
     public function index()
     {
     $fabrikasi = Fabrikasi::with(['workorder', 'userBy', 'userTo'])->get();
-
-    // Log beberapa contoh untuk debug
-    foreach ($fabrikasi->take(3) as $fa) {
-        Log::info('Workorder relation:', [
-            'id' => $fa->id,
-            'workorder' => $fa->workorder ? $fa->workorder->nomor : null,
-        ]);
-    }
-
     return response()->json([
         'status' => true,
         'data' => FabrikasiResource::collection($fabrikasi),

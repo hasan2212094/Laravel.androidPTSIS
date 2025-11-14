@@ -9,14 +9,14 @@ class Messenger extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id_by',
-        'user_id_to',
-        'title',
-        'message',
+         'user_id_by',
+         'user_id_to', 
+         'title', 
+         'message'
     ];
 public function userBy()
     {
-        return $this->belongsTo(User::class, 'user_id_by');
+        return $this->belongsTo(User::class, 'user_id_by',);
     }
 
     public function userTo()
