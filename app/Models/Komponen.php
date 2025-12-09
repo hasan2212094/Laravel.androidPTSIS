@@ -17,6 +17,7 @@ class Komponen extends Model
         'keterangan',
         'spekifikasi',
         'qty',
+        'unit_id',
         'status_pekerjaan',
         'date_start',
         'workorder_id',
@@ -37,5 +38,10 @@ class Komponen extends Model
     {
         return $this->belongsTo(Workorder::class, 'workorder_id');
     }
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class,'unit_id' );
+    }
+
 
 }

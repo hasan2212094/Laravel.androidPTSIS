@@ -12,8 +12,10 @@ class WorkorderController extends Controller
      */
     public function index()
     {
-        $workorders = Workorder::all();
-        return response()->json($workorders);
+          $workorders = Workorder::all();
+        return response()->json([
+        'data' => $workorders
+    ]);
     }
 
     /**

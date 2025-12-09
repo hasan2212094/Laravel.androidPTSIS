@@ -21,7 +21,9 @@ class ElectricalResource extends JsonResource
     'user_by_name' => optional($this->userBy)->name,
     'jenis_Pekerjaan' => $this->jenis_Pekerjaan,
     'keterangan' => $this->keterangan,
-    'qty' => $this->qty,
+    'qty' => (int)$this->qty,
+    'unit_id' => optional($this->unit)->id !== null ? (int) $this->unit->id : null,
+    'unit' => optional($this->unit)->name,
     // Status perbaikan (code + label)
     'status_pekerjaan' => (int) $this->status_pekerjaan,
     'status_pekerjaan_label' => $this->getStatusLabel($this->status_pekerjaan),

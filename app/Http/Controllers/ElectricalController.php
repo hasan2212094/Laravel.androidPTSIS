@@ -21,7 +21,7 @@ class ElectricalController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {$electricals = Electrical::with([ 'images','workorder', 'userBy', 'userTo', 'images_done'])->get();
+    {$electricals = Electrical::with([ 'images','workorder', 'userBy', 'userTo', 'images_done','unit'])->get();
         $data = ElectricalResource::collection($electricals);
 
         return response()->json([
@@ -50,7 +50,8 @@ class ElectricalController extends Controller
         'user_id_by' => 'required|exists:users,id',
         'jenis_Pekerjaan' => 'required|string',
         'keterangan' => 'nullable|string',
-        'qty'=>'required|string',
+        'qty' => 'required|numeric',
+        'unit_id' => 'required|exists:units,id',
         'status_pekerjaan' => 'required|integer|in:0,1,2',
         'workorder_id' => 'required|exists:workorders,id', 
         'date_start' => 'nullable|date',
@@ -72,10 +73,11 @@ class ElectricalController extends Controller
         'jenis_Pekerjaan',
         'keterangan',
         'qty',
+        'unit_id',
         'status_pekerjaan',
         'workorder_id',
     ]);
-
+    $validated['qty'] = (int) $validated['qty'];
     // ✅ Format tanggal otomatis
     if ($request->filled('date_start')) {
     // Gunakan waktu saat ini (jam dari server)
@@ -120,7 +122,7 @@ class ElectricalController extends Controller
 
         return response()->json([
             'message' => 'Data berhasil disimpan',
-            'data' => new ElectricalResource($electrical->load(['images','workorder','images_done'])),
+            'data' => new ElectricalResource($electrical->load(['images','workorder','images_done','userBy','userTo','unit'])),
         ], 201);
 
     } catch (\Exception $e) {
@@ -141,7 +143,7 @@ class ElectricalController extends Controller
      */
     public function show(string $id)
    {
-    $electrical = Electrical::with(['workorder', 'userBy', 'userTo','images', 'images_done'])->find($id);
+    $electrical = Electrical::with(['workorder', 'userBy', 'userTo','images', 'images_done', 'unit'])->find($id);
 
     if (!$electrical) {
         return response()->json([
@@ -175,18 +177,20 @@ class ElectricalController extends Controller
 
             // Validasi input
             $validated = $request->validate([
-                'jenis_Pekerjaan' => 'required|string',
+               'jenis_Pekerjaan' => 'required|string',
                 'keterangan' => 'nullable|string',
-                'qty'=>'required|string',
-                'workorder_id' => 'required|exists:workorders,id',
+                'qty' => 'required|numeric',
+                'unit_id' => 'required|exists:units,id',
+                'workorder_id' => 'required|exists:workorders,id'
             ]);
 
-            if ($request->filled('date')) {
-                $validated['date'] = Carbon::parse($request->date)
-                    ->setTimeFromTimeString(now()->format('H:i:s'));
-            } else {
-                $validated['date'] = $electrical->date ?? now();
-            }
+             if ($request->filled('date')) {
+            $validated['date'] = Carbon::parse($request->date)
+                ->setTimeFromTimeString(now()->format('H:i:s'));
+        } else {
+            // tetap gunakan tanggal lama
+            $validated['date'] = $electrical->date;
+        }
 
             $electrical->update($validated);
             // Update assignment dengan data yang sudah divalidasi

@@ -12,18 +12,19 @@ class KomponenExport implements FromCollection, WithHeadings, WithMapping, Shoul
 {
     public function collection()
 {
-   return Komponen::with(['userBy', 'userTo', 'workorder'])->get();
+   return Komponen::with(['userBy', 'userTo', 'workorder','unit'])->get();
 }
 
     public function headings(): array
     {
         return [
             'ID',
-            'User By',
-            'User To',
+            'Operator',
             'No WO',
+            'Client',
             'Jenis Pekerjaan',
             'Qty',
+            'Unit',
             'Spesifikasi',
             'Keterangan',
             'Status Pekerjaan',
@@ -40,10 +41,11 @@ public function map($komponen): array
     return [
         $komponen->id,
         optional($komponen->userBy)->name ?? '-',
-        optional($komponen->userTo)->name ?? '-',
         optional($komponen->workorder)->nomor ?? '-',
+        optional($komponen->workorder)->client ?? '-',
         $komponen->jenis_Pekerjaan ?? '-',
         $komponen->qty ?? '-',
+        optional($komponen->unit)->name,
         $komponen->spekifikasi ?? '-',
         $komponen->keterangan ?? '-',
         $komponen->status_pekerjaan == 1 ? 'Done' : 'Progress',

@@ -16,6 +16,7 @@ class Painting extends Model
         'jenis_Pekerjaan',
         'keterangan',
         'qty',
+        'unit_id',
         'status_pekerjaan',
         'date_start',
         'workorder_id',
@@ -36,5 +37,8 @@ class Painting extends Model
     {
         return $this->belongsTo(Workorder::class, 'workorder_id');
     }
-
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class,'unit_id' );
+    }
 }

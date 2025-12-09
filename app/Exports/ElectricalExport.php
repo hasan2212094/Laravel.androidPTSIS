@@ -21,16 +21,17 @@ class ElectricalExport implements FromCollection, WithHeadings, WithMapping, Sho
     {
         return [
             'ID',
-            'User By',
-            'User To',
+            'Operator',
+            'No WO',
+            'Client',
             'Jenis Pekerjaan',
             'Qty',
+            'Unit',
             'Keterangan',
             'Status Pekerjaan',
             'Tanggal Mulai',
             'Tanggal Selesai',
             'Comment Done',
-            'No WO',
         ];
     }
     /**
@@ -41,15 +42,16 @@ class ElectricalExport implements FromCollection, WithHeadings, WithMapping, Sho
         return [
             $electrical->id,
             optional($electrical->userBy)->name,
-            optional($electrical->userTo)->name,
+            optional($electrical->workorder)->nomor,
+            optional($electrical->workorder)->client,
             $electrical->jenis_Pekerjaan,
             $electrical->qty,
+            optional($electrical->unit)->name,
             $electrical->keterangan,
             $electrical->status_pekerjaan == 1 ? 'Done' : 'Progress',
             $electrical->date_start,
             $electrical->date_end,
             $electrical->comment_done,
-            optional($electrical->workorder)->nomor,
         ];
     }
 }

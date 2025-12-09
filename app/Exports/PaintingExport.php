@@ -12,23 +12,24 @@ class PaintingExport implements FromCollection, WithHeadings, WithMapping, Shoul
 {
  public function collection()
   {
-        return Painting::with(['userBy', 'userTo', 'workorder'])->get();
+        return Painting::with(['userBy', 'userTo', 'workorder','unit'])->get();
   }
 
     public function headings(): array
     {
         return [
             'ID',
-            'User By',
-            'User To',
+            'Operator',
+            'No WO',
+            'Client',
             'Jenis Pekerjaan',
             'Qty',
+            'Unit',
             'Keterangan',
             'Status Pekerjaan',
             'Tanggal Mulai',
             'Tanggal Selesai',
             'Comment Done',
-            'No WO',
         ];
     }
 
@@ -40,15 +41,16 @@ class PaintingExport implements FromCollection, WithHeadings, WithMapping, Shoul
         return [
             $painting->id,
             optional($painting->userBy)->name ?? '-',
-            optional($painting->userTo)->name ?? '-',
+            optional($painting->workorder)->nomor ?? '-',
+            optional($painting->workorder)->client ?? '_',
             $painting->jenis_Pekerjaan ?? '-', // pastikan nama kolom sesuai di DB
             $painting->qty ?? '-',
+            optional($painting->unit)->name,
             $painting->keterangan ?? '-',
             $painting->status_pekerjaan == 1 ? 'Done' : 'Progress',
             $painting->date_start ?? '-',
             $painting->date_end ?? '-',
             $painting->comment_done ?? '-',
-            optional($painting->workorder)->nomor ?? '-',
         ];
     }
 }

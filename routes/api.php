@@ -9,16 +9,17 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\QualityController;
 use App\Http\Controllers\KomponenController;
 use App\Http\Controllers\PaintingController;
 use App\Http\Controllers\FabrikasiController;
+use App\Http\Controllers\MessengerController;
 use App\Http\Controllers\WorkorderController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ElectricalController;
 use App\Http\Controllers\MaintenanceController;
-use App\Http\Controllers\MessengerController;
 use App\Http\Controllers\NotificationController;
 
 /*
@@ -154,6 +155,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/fabrikasi/restore/{id}', [FabrikasiController::class, 'restore']); //kembalikan data yang hilang
     Route::delete('/fabrikasi/force-delete/{id}', [FabrikasiController::class, 'forceDelete']); //hapus permanet
     Route::get('/work-orders', [FabrikasiController::class, 'workorder_list']);
+    Route::get('/unit', [FabrikasiController::class, 'unit_list']);
 
     Route::get('/komponen/export', [KomponenController::class, 'export']); 
     Route::get('/komponen', [KomponenController::class, 'index']);
@@ -166,6 +168,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/komponen/restore/{id}', [KomponenController::class, 'restore']); //kembalikan data yang hilang
     Route::delete('/komponen/force-delete/{id}', [KomponenController::class, 'forceDelete']); //hapus permanet
     Route::get('/work-orders', [KomponenController::class, 'workorder_list']);
+    Route::get('/unit1', [KomponenController::class, 'unit_list']);
 
     Route::get('/painting/export', [PaintingController::class, 'export']); 
     Route::get('/painting', [PaintingController::class, 'index']);
@@ -178,6 +181,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/painting/restore/{id}', [PaintingController::class, 'restore']); //kembalikan data yang hilang
     Route::delete('/painting/force-delete/{id}', [PaintingController::class, 'forceDelete']); //hapus permanet
     Route::get('/work-orders', [PaintingController::class, 'workorder_list']);
+    Route::get('/unit2', [PaintingController::class, 'unit_list']);
 
     Route::get('/electrical/export', [ElectricalController::class, 'export']); 
     Route::get('/electrical', [ElectricalController::class, 'index']);
@@ -190,6 +194,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/electrical/restore/{id}', [ElectricalController::class, 'restore']); //kembalikan data yang hilang
     Route::delete('/electrical/force-delete/{id}', [ElectricalController::class, 'forceDelete']); //hapus permanet
     Route::get('/work-orders', [ElectricalController::class, 'workorder_list']);
+    Route::get('/unit3', [ElectricalController::class, 'unit_list']);
 
     Route::get('/workorder', [WorkorderController::class, 'index']);
     Route::post('/workorder', [WorkorderController::class, 'store']);

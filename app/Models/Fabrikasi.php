@@ -21,21 +21,24 @@ class Fabrikasi extends Model
         'workorder_id',
         'comment_done',
         'date_end',
+        'unit_id',
     ];
 
     public function userBy()
     {
         return $this->belongsTo(User::class, 'user_id_by');
     }
-
     public function userTo()
     {
         return $this->belongsTo(User::class, 'user_id_to');
     }
+
     public function workorder()
     {
         return $this->belongsTo(Workorder::class, 'workorder_id');
     }
-
-
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class,'unit_id' );
+    }
 }

@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Unit;
 use App\Models\Komponen;
 use App\Models\Workorder;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Exports\KomponenExport;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\UnitResource;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\KomponenResource;
 use App\Http\Resources\WorkOrderResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use App\Exports\KomponenExport;
 
 class KomponenController extends Controller
 {
@@ -22,7 +24,7 @@ class KomponenController extends Controller
      */
     public function index()
     {
-       $komponen = Komponen::with(['workorder', 'userBy', 'userTo'])->get();
+    $komponen = Komponen::with(['workorder', 'userBy', 'userTo','unit'])->get();
     return response()->json([
         'status' => true,
         'data' => KomponenResource::collection($komponen),
@@ -50,7 +52,8 @@ class KomponenController extends Controller
         'jenis_Pekerjaan' => 'required|string',
         'keterangan' => 'nullable|string',
         'spekifikasi' => 'nullable|string',
-        'qty'=>'required|string',
+        'qty' => 'required|numeric',
+        'unit_id' => 'required|exists:units,id',
         'status_pekerjaan' => 'required|integer|in:0,1,2',
         'workorder_id' => 'required|exists:workorders,id',
         'date_start' => 'nullable|date',
@@ -72,10 +75,11 @@ class KomponenController extends Controller
         'keterangan',
         'spekifikasi',
         'qty',
+        'unit_id',
         'status_pekerjaan',
         'workorder_id',
     ]);
-
+     $validated['qty'] = (int) $validated['qty'];
     // ✅ Format tanggal otomatis
     if ($request->filled('date_start')) {
     // Gunakan waktu saat ini (jam dari server)
@@ -83,8 +87,6 @@ class KomponenController extends Controller
 } else {
     $validated['date_start'] = now();
 }
-
-
     // 🔹 Logging hasil parsing tanggal
     Log::info('✅ Parsed date values', [
         'date_start' => $validated['date_start'],
@@ -94,7 +96,7 @@ class KomponenController extends Controller
         // Simpan data utama
         $komponen  = Komponen::create($validated);
 
-        Log::info('✅ Maintenance created successfully', [
+        Log::info('✅ data created successfully', [
             'id' => $komponen->id,
             'data' => $validated,
         ]);
@@ -102,11 +104,11 @@ class KomponenController extends Controller
 
         return response()->json([
             'message' => 'Data berhasil disimpan',
-            'data' => new KomponenResource($komponen->load(['workorder', 'userBy', 'userTo'])),
+            'data' => new KomponenResource($komponen->load(['workorder', 'userBy', 'userTo','unit'])),
         ], 201);
 
     } catch (\Exception $e) {
-        Log::error('💥 Error saat menyimpan maintenance', [
+        Log::error('💥 Error saat menyimpan komponen', [
             'exception' => $e->getMessage(),
             'trace' => $e->getTraceAsString(),
         ]);
@@ -122,13 +124,19 @@ class KomponenController extends Controller
         return WorkOrderResource::collection(Workorder::all());
     }
 
+     public function unit_list()
+    {
+        return UnitResource::collection(Unit::all());
+    }
+
+
 
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-          $komponen = Komponen::with(['workorder', 'userBy', 'userTo'])->find($id);
+          $komponen = Komponen::with(['workorder', 'userBy', 'userTo','unit'])->find($id);
 
     if (!$komponen) {
         return response()->json([
@@ -155,48 +163,49 @@ class KomponenController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-        try {
-           
-            $komponen = Komponen::findOrFail($id);
+{
+    try {
 
-            // Validasi input
-            $validated = $request->validate([
-                 'jenis_Pekerjaan' => 'required|string',
-                 'keterangan' => 'nullable|string',
-                 'qty'=>'required|string',
-                 'spekifikasi' => 'nullable|string',
-                 'workorder_id' => 'required|exists:workorders,id',
-                
-            ]);
+        $komponen = Komponen::findOrFail($id);
 
-            if ($request->filled('date_start')) {
-                $validated['date_start'] = Carbon::parse($request->date)
-                    ->setTimeFromTimeString(now()->format('H:i:s'));
-            } else {
-                $validated['date_start'] = $quality->date ?? now();
-            }
+        // Validasi input
+        $validated = $request->validate([
+            'jenis_Pekerjaan' => 'required|string',
+            'keterangan' => 'nullable|string',
+            'qty' => 'required|numeric',
+            'unit_id' => 'required|exists:units,id',
+            'workorder_id' => 'required|exists:workorders,id',
+        ]);
 
-            $komponen->update($validated);
-            // Update assignment dengan data yang sudah divalidasi
-            $komponen->update($validated);
-
-            return response()->json([
-                'message' => 'Komponen updated successfully',
-                'data' => new KomponenResource($komponen->load(['workorder']))
-            ], 200);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation error',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Internal server error',
-                'error' => $e->getMessage()
-            ], 500);
+        // Update tanggal hanya jika dikirim oleh user
+        if ($request->filled('date')) {
+            $validated['date'] = Carbon::parse($request->date)
+                ->setTimeFromTimeString(now()->format('H:i:s'));
+        } else {
+            // tetap gunakan tanggal lama
+            $validated['date'] = $komponen->date;
         }
+
+        // Update data
+        $komponen->update($validated);
+
+        return response()->json([
+            'message' => 'Komponen updated successfully',
+            'data' => new KomponenResource($komponen->load(['workorder']))
+        ], 200);
+
+    } catch (ValidationException $e) {
+        return response()->json([
+            'message' => 'Validation error',
+            'errors' => $e->errors()
+        ], 422);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Internal server error',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
      public function updatedone(Request $request, string $id)
    {
     try {
@@ -282,7 +291,7 @@ class KomponenController extends Controller
     }
     public function export()
     {
-        $fileName = 'fabrikasi_export_' . now()->format('Ymd_His') . '.xlsx';
+        $fileName = 'komponen' . now()->format('Ymd_His') . '.xlsx';
         return Excel::download(new KomponenExport, $fileName);
     }
 }

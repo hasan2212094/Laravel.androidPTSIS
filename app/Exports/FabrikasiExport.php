@@ -12,23 +12,24 @@ class FabrikasiExport implements FromCollection, WithHeadings, WithMapping, Shou
 {
  public function collection()
     {
-        return Fabrikasi::with(['userBy', 'userTo', 'workorder'])->get();
+        return Fabrikasi::with(['userBy', 'userTo', 'workorder','unit'])->get();
     }
 
     public function headings(): array
     {
         return [
             'ID',
-            'User By',
-            'User To',
+            'Operator',
+            'No WO',
+            'Client',
             'Jenis Pekerjaan',
             'Qty',
+            'Unit',
             'Keterangan',
             'Status Pekerjaan',
             'Tanggal Mulai',
             'Tanggal Selesai',
             'Comment Done',
-            'No WO',
         ];
     }
 
@@ -40,15 +41,16 @@ class FabrikasiExport implements FromCollection, WithHeadings, WithMapping, Shou
         return [
             $fabrikasi->id,
             optional($fabrikasi->userBy)->name ?? '-',
-            optional($fabrikasi->userTo)->name ?? '-',
+            optional($fabrikasi->workorder)->nomor ?? '-',
+            optional($fabrikasi->workorder)->client ?? '-',
             $fabrikasi->jenis_Pekerjaan ?? '-', // pastikan nama kolom sesuai di DB
             $fabrikasi->qty ?? '-',
+            optional($fabrikasi->unit)->name,
             $fabrikasi->keterangan ?? '-',
             $fabrikasi->status_pekerjaan == 1 ? 'Done' : 'Progress',
             $fabrikasi->date_start ?? '-',
             $fabrikasi->date_end ?? '-',
-            $fabrikasi->comment_done ?? '-',
-            optional($fabrikasi->workorder)->nomor ?? '-',
+            $fabrikasi->comment_done ?? '-'
         ];
     }
 }

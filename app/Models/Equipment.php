@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Equipment extends Model
 {
     use HasFactory;
-     protected $table = 'equipment'; // ✅ tambahkan ini
+    protected $table = 'equipment'; // ✅ tambahkan ini
     protected $fillable = [
         'no_serial',
         'nama_alat',

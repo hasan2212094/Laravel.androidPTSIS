@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\PaintingExport;
+use App\Models\Unit;
 use App\Models\Painting;
 use App\Models\Workorder;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Exports\PaintingExport;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\UnitResource;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\PaintingResource;
 use App\Http\Resources\WorkOrderResource;
@@ -22,7 +24,7 @@ class PaintingController extends Controller
      */
     public function index()
     {
-       $painting = Painting::with(['workorder', 'userBy', 'userTo'])->get();
+       $painting = Painting::with(['workorder', 'userBy', 'userTo', 'unit'])->get();
     return response()->json([
         'status' => true,
         'data' => PaintingResource::collection($painting),
@@ -46,10 +48,12 @@ class PaintingController extends Controller
 
     // Validasi input
     $validationRules = [
-        'user_id_by' => 'required|exists:users,id',
+         'user_id_by' => 'required|exists:users,id',
         'jenis_Pekerjaan' => 'required|string',
         'keterangan' => 'nullable|string',
-        'qty'=>'required|string',
+        'spekifikasi' => 'nullable|string',
+        'qty' => 'required|numeric',
+        'unit_id' => 'required|exists:units,id',
         'status_pekerjaan' => 'required|integer|in:0,1,2',
         'workorder_id' => 'required|exists:workorders,id',
         'date_start' => 'nullable|date',
@@ -70,10 +74,11 @@ class PaintingController extends Controller
         'jenis_Pekerjaan',
         'keterangan',
         'qty',
+        'unit_id',
         'status_pekerjaan',
         'workorder_id',
     ]);
-
+    $validated['qty'] = (int) $validated['qty'];
     // ✅ Format tanggal otomatis
     if ($request->filled('date_start')) {
     // Gunakan waktu saat ini (jam dari server)
@@ -100,7 +105,7 @@ class PaintingController extends Controller
 
         return response()->json([
             'message' => 'Data berhasil disimpan',
-            'data' => new PaintingResource($painting->load(['workorder', 'userBy', 'userTo'])),
+            'data' => new PaintingResource($painting->load(['workorder', 'userBy', 'userTo', 'unit'])),
         ], 201);
 
     } catch (\Exception $e) {
@@ -120,6 +125,10 @@ class PaintingController extends Controller
     {
         return WorkOrderResource::collection(Workorder::all());
     }
+     public function unit_list()
+    {
+        return UnitResource::collection(Unit::all());
+    }
 
 
     /**
@@ -127,7 +136,7 @@ class PaintingController extends Controller
      */
     public function show(string $id)
      {
-      $painting = Painting::with(['workorder', 'userBy', 'userTo'])->find($id);
+      $painting = Painting::with(['workorder', 'userBy', 'userTo', 'unit'])->find($id);
 
     if (!$painting) {
         return response()->json([
@@ -160,19 +169,21 @@ class PaintingController extends Controller
 
             // Validasi input
             $validated = $request->validate([
-                 'jenis_Pekerjaan' => 'required|string',
-                 'keterangan' => 'nullable|string',
-                 'qty'=>'required|string',
-                 'workorder_id' => 'required|exists:workorders,id',
+                  'jenis_Pekerjaan' => 'required|string',
+                  'keterangan' => 'nullable|string',
+                  'qty' => 'required|numeric',
+                  'unit_id' => 'required|exists:units,id',
+                  'workorder_id' => 'required|exists:workorders,id'
                 
             ]);
 
-            if ($request->filled('date_start')) {
-                $validated['date_start'] = Carbon::parse($request->date)
-                    ->setTimeFromTimeString(now()->format('H:i:s'));
-            } else {
-                $validated['date_start'] = $quality->date ?? now();
-            }
+            if ($request->filled('date')) {
+            $validated['date'] = Carbon::parse($request->date)
+                ->setTimeFromTimeString(now()->format('H:i:s'));
+              } else {
+            // tetap gunakan tanggal lama
+            $validated['date'] = $painting->date;
+              }
 
             $painting->update($validated);
             // Update assignment dengan data yang sudah divalidasi
@@ -279,7 +290,7 @@ class PaintingController extends Controller
     }
     public function export()
     {
-        $fileName = 'fabrikasi_export_' . now()->format('Ymd_His') . '.xlsx';
+        $fileName = 'painting_export_' . now()->format('Ymd_His') . '.xlsx';
         return Excel::download(new PaintingExport, $fileName);
     }
 }
