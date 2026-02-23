@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Unit;
 use App\Models\Workorder;
 use App\Models\Electrical;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Exports\ElectricalExport;
+use App\Exports\AfterserviceExport;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\UnitResource;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\WorkOrderResource;
 use Illuminate\Support\Facades\Validator;
@@ -48,14 +51,13 @@ class ElectricalController extends Controller
     // Validasi input
     $validationRules = [
         'user_id_by' => 'required|exists:users,id',
-        'jenis_Pekerjaan' => 'required|string',
-        'keterangan' => 'nullable|string',
-        'qty' => 'required|numeric',
+        'jenis_Pekerjaan' => 'required|string|max:255',
+        'keterangan' => 'sometimes|string|max:100000', 
+        'qty' => 'required|integer|min:1',
         'unit_id' => 'required|exists:units,id',
         'status_pekerjaan' => 'required|integer|in:0,1,2',
-        'workorder_id' => 'required|exists:workorders,id', 
-        'date_start' => 'nullable|date',
-        'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:20240',
+        'workorder_id' => 'required|exists:workorders,id',
+        'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:20480',
     ];
 
     $validator = Validator::make($request->all(), $validationRules);
@@ -77,6 +79,7 @@ class ElectricalController extends Controller
         'status_pekerjaan',
         'workorder_id',
     ]);
+    $validated['keterangan'] = str_replace("\\n", "\n", $request->keterangan ?? '');
     $validated['qty'] = (int) $validated['qty'];
     // ✅ Format tanggal otomatis
     if ($request->filled('date_start')) {
@@ -326,6 +329,10 @@ if ($files) {
  public function workorder_list()
     {
         return WorkOrderResource::collection(Workorder::all());
+    }
+     public function unit_list()
+    {
+        return UnitResource::collection(Unit::all());
     }
 
 }

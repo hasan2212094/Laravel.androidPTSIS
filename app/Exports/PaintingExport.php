@@ -11,9 +11,9 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 class PaintingExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize
 {
  public function collection()
-  {
-        return Painting::with(['userBy', 'userTo', 'workorder','unit'])->get();
-  }
+    {
+       return Painting::withTrashed()->get();
+    }
 
     public function headings(): array
     {
@@ -30,6 +30,7 @@ class PaintingExport implements FromCollection, WithHeadings, WithMapping, Shoul
             'Tanggal Mulai',
             'Tanggal Selesai',
             'Comment Done',
+            'Softdelete'
         ];
     }
 
@@ -51,6 +52,7 @@ class PaintingExport implements FromCollection, WithHeadings, WithMapping, Shoul
             $painting->date_start ?? '-',
             $painting->date_end ?? '-',
             $painting->comment_done ?? '-',
+            $painting->deleted_at ? 'Deleted' : 'Active', // tambahan
         ];
     }
 }

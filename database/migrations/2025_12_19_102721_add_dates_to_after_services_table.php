@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('maintenances', function (Blueprint $table) {
-          $table->foreignId('equipment_id')->nullable()->constrained('equipments')->nullOnDelete();
+        Schema::table('after_services', function (Blueprint $table) {
+         $table->dateTime('date_start')->nullable()->after('status_pekerjaan');
+         $table->dateTime('date_end')->nullable()->after('date_start');
         });
     }
 
@@ -21,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('maintenances', function (Blueprint $table) {
-            //
+        Schema::table('after_services', function (Blueprint $table) {
+              $table->dropColumn(['date_start', 'date_end']);
         });
     }
 };

@@ -2,8 +2,6 @@
 
 namespace App\Exports;
 
-namespace App\Exports;
-
 use App\Models\Electrical;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -13,9 +11,9 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 class ElectricalExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize
 {
     public function collection()
-{
-    return Electrical::all(); // tanpa relasi dulu
-}
+    {
+         return Electrical::withTrashed()->get();
+    }
 
     public function headings(): array
     {
@@ -32,11 +30,10 @@ class ElectricalExport implements FromCollection, WithHeadings, WithMapping, Sho
             'Tanggal Mulai',
             'Tanggal Selesai',
             'Comment Done',
+            'Softdelete',
         ];
     }
-    /**
-     * @param \App\Models\electrical $electrical
-     */
+
     public function map($electrical): array
     {
         return [
@@ -52,6 +49,7 @@ class ElectricalExport implements FromCollection, WithHeadings, WithMapping, Sho
             $electrical->date_start,
             $electrical->date_end,
             $electrical->comment_done,
+            $electrical->deleted_at ? 'Deleted' : 'Active', // tambahan
         ];
     }
 }

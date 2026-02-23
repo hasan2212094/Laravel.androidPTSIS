@@ -12,7 +12,7 @@ class FabrikasiExport implements FromCollection, WithHeadings, WithMapping, Shou
 {
  public function collection()
     {
-        return Fabrikasi::with(['userBy', 'userTo', 'workorder','unit'])->get();
+        return Fabrikasi::withTrashed()->get();
     }
 
     public function headings(): array
@@ -30,6 +30,7 @@ class FabrikasiExport implements FromCollection, WithHeadings, WithMapping, Shou
             'Tanggal Mulai',
             'Tanggal Selesai',
             'Comment Done',
+            'Softdelete',
         ];
     }
 
@@ -50,7 +51,8 @@ class FabrikasiExport implements FromCollection, WithHeadings, WithMapping, Shou
             $fabrikasi->status_pekerjaan == 1 ? 'Done' : 'Progress',
             $fabrikasi->date_start ?? '-',
             $fabrikasi->date_end ?? '-',
-            $fabrikasi->comment_done ?? '-'
+            $fabrikasi->comment_done ?? '-',
+            $fabrikasi->deleted_at ? 'Deleted' : 'Active',
         ];
     }
 }

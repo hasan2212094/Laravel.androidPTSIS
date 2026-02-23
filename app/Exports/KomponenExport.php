@@ -10,10 +10,10 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
 class KomponenExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize
 {
-    public function collection()
-{
-   return Komponen::with(['userBy', 'userTo', 'workorder','unit'])->get();
-}
+  public function collection()
+    {
+        return Komponen::withTrashed()->get();
+    }
 
     public function headings(): array
     {
@@ -25,12 +25,13 @@ class KomponenExport implements FromCollection, WithHeadings, WithMapping, Shoul
             'Jenis Pekerjaan',
             'Qty',
             'Unit',
-            'Spesifikasi',
             'Keterangan',
             'Status Pekerjaan',
             'Tanggal Mulai',
             'Tanggal Selesai',
             'Comment Done',
+            'Spesifikasi',
+            'Softdelete',
         ];
     }
 /**
@@ -46,12 +47,13 @@ public function map($komponen): array
         $komponen->jenis_Pekerjaan ?? '-',
         $komponen->qty ?? '-',
         optional($komponen->unit)->name,
-        $komponen->spekifikasi ?? '-',
         $komponen->keterangan ?? '-',
         $komponen->status_pekerjaan == 1 ? 'Done' : 'Progress',
         $komponen->date_start ?? '-',
         $komponen->date_end ?? '-',
         $komponen->comment_done ?? '-',
+        $komponen->spekifikasi ?? '-',
+        $komponen->deleted_at ? 'Deleted' : 'Active', // tambahan
     ];
 }
 }

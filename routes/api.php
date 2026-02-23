@@ -3,6 +3,7 @@
 use App\Models\Fabrikasi;
 use Illuminate\Http\Request;
 use App\Exports\QualityExport;
+use App\Http\Controllers\AfterserviceController;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
@@ -207,5 +208,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/messenger/{id}',[MessengerController::class,'show']);
     Route::put('/messenger/{id}',[MessengerController::class,'update']);
     Route::delete('/messenger/{id}',[MessengerController::class,'destroy']);
+
+    Route::get('/afterservice/export', [AfterserviceController::class, 'export']); 
+    Route::get('/afterservice', [AfterserviceController::class, 'index']);
+    Route::post('/afterservice', [AfterserviceController::class, 'store']);
+    Route::get('/afterservice/{id}', [AfterserviceController::class, 'show']);
+    Route::put('/afterservice/{id}', [AfterserviceController::class, 'update']);
+    Route::post('/afterservice/updateprogress/{id}',[AfterserviceController::class, 'update_progress']);
+    Route::post('/afterservice/updatedone/{id}',[AfterserviceController::class, 'update_done']);
+    Route::get('/afterservicedelete', [AfterserviceController::class, 'indexdelete']); // ambil semua
+    Route::delete('/afterservice/{id}', [AfterserviceController::class, 'destroy']); // hapus sementara
+    Route::put('/afterservice/restore/{id}', [AfterserviceController::class, 'restore']); //kembalikan data yang hilang
+    Route::delete('/afterservice/force-delete/{id}', [AfterserviceController::class, 'forceDelete']); 
 
 });
